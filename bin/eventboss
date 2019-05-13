@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'dotenv'
+require 'eventboss'
+require 'optparse'
+
+Dotenv.load
+
+STDOUT.sync = true
+options = {}
+
+OptionParser.new do |parser|
+  parser.on('-r', '--require LIBRARY', 'Require custom app entrypoint') do |lib|
+    options[:require] = lib
+  end
+end.parse!
+
+begin
+  logger = Eventboss::Logger
+
+  require 'rails'
+  logger.debug('Loading rails...')
+  if ::Rails::VERSION::MAJOR < 4
+    require File.expand_path('config/environment.rb')
+  else
+    require File.expand_path('config/application.rb')
+    require File.expand_path('config/environment.rb')
+  end
+  ::Rails.application.eager_load!
+rescue LoadError
+  logger.debug('Seems like not a Rails app')
+
+  if options[:require].nil?
+    logger.warn('Please use -r to load a custom app entrypoint')
+    exit(0)
+  else
+    logger.debug("Loading #{options[:require]}")
+    require File.expand_path(options[:require])
+  end
+end
+
+logger.info('Starting eventboss...')
+logger.info('Active Listeners:')
+logger.info(Eventboss::QueueListener.list.to_s)
+
+Eventboss.launch
