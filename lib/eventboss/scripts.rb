@@ -1,0 +1,1 @@
+load 'tasks/eventboss.rake'
