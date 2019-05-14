@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Eventboss Ruby Client.}
   spec.description   = %q{Eventboss Ruby Client.}
-  spec.homepage      = "https://airhelp.com"
+  spec.homepage      = "https://github.com/AirHelp/eventboss"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
