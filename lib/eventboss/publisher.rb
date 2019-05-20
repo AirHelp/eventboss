@@ -26,7 +26,7 @@ module Eventboss
       src_selector = @generic ? "" : "-#{configuration.eventboss_app_name}"
 
       "arn:aws:sns:#{configuration.eventboss_region}:#{configuration.eventboss_account_id}:\
-eventboss#{src_selector}-#{event_name}-#{Eventboss.env}"
+#{Eventboss.configuration.sns_sqs_name_infix}#{src_selector}-#{event_name}-#{Eventboss.env}"
     end
   end
 end

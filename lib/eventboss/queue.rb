@@ -8,10 +8,10 @@ module Eventboss
         if generic
           ''
         else
-          "-#{source}"
+          "#{source}-"
         end
 
-      "#{destination}-eventboss#{source}-#{event}-#{env}"
+      "#{destination}-#{Eventboss.configuration.sns_sqs_name_infix}-#{source}#{event}-#{env}"
     end
 
     def initialize(name, configuration = Eventboss.configuration)

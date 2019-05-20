@@ -88,7 +88,7 @@ module Eventboss
     end
 
     def sns_sqs_name_infix
-      defined_or_default('sns_sqs_name_infix') { ENV['EVENTBUS_SQS_SNS_NAME_INFIX'] || '-eventboss-' }
+      defined_or_default('sns_sqs_name_infix') { ENV['EVENTBUS_SQS_SNS_NAME_INFIX'] || 'eventboss' }
     end
 
     private
