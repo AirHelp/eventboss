@@ -27,7 +27,15 @@ begin
     require File.expand_path('config/application.rb')
     require File.expand_path('config/environment.rb')
   end
-  ::Rails.application.eager_load!
+
+  # Due to a changes introduced in Rails 6 regarding autoloading
+  # we need to determine how to perform eager_load
+  # @see https://weblog.rubyonrails.org/2019/2/22/zeitwerk-integration-in-rails-6-beta-2/
+  if ::Rails.try(:autoloaders).try(:zeitwerk_enabled?)
+    ::Zeitwerk::Loader.eager_load_all
+  else
+    ::Rails.application.eager_load!
+  end
 rescue LoadError
   logger.debug('Seems like not a Rails app')
 
