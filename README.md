@@ -1,5 +1,7 @@
 # Eventboss
 
+[![Gem Version](https://badge.fury.io/rb/eventboss.svg)](https://badge.fury.io/rb/eventboss)
+
 Eventboss ruby client.
 
 ## Installation
