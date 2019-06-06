@@ -2,7 +2,29 @@
 
 [![Gem Version](https://badge.fury.io/rb/eventboss.svg)](https://badge.fury.io/rb/eventboss)
 
-Eventboss ruby client.
+AWS based Pub/Sub implementation in Ruby.
+
+## Features
+
+* [x] language agnostic (ruby, js http://github.com/AirHelp/eventboss-js)
+* [x] fluent interface
+* [x] multithread polling (multi polling strategy)
+* [x] generic queues (multiple apps sending the same event)
+* [x] postponing jobs
+* [x] automatic serialization/deserialization
+* [x] batch sending (SQS one-to-one)
+* [x] support multiple environments in the same AWS account
+* [x] pluggable error handlers (airbrake, newrelic)
+* [x] utility tasks (deadletter reload)
+* [x] localstack compatible
+* [x] rails support (preloads rails environment)
+* [ ] terraform pub/sub scripts
+* [ ] development mode (creates missing SNS/SQS on the fly)
+* [ ] alternative infrastructure (redis?, kafka?)
+* [ ] message compression
+* [ ] alternative serialization (protobuf)
+* [ ] subscription filtering
+* [ ] fifo queues support
 
 ## Installation
 
