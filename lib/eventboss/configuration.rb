@@ -17,7 +17,7 @@ module Eventboss
                 :sns_sqs_name_infix
 
     def raise_on_missing_configuration
-      defined_or_default('raise_on_missing_configuration') { false }
+      defined_or_default('raise_on_missing_configuration') { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION']&.downcase == 'true' }
     end
 
     def error_handlers
