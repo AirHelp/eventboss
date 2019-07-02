@@ -16,6 +16,26 @@ RSpec.describe Eventboss::Configuration do
     it 'caches evaluated default' do
       expect(subject.sns_client.object_id).to eq(subject.sns_client.object_id)
     end
+
+    context 'when in ENV' do
+      after { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION'] = nil }
+
+      context 'when false' do
+        before { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION'] = 'false' }
+
+        it 'returns false' do
+          expect(subject.raise_on_missing_configuration).to eq(false)
+        end
+      end
+
+      context 'when true' do
+        before { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION'] = 'true' }
+
+        it 'returns true' do
+          expect(subject.raise_on_missing_configuration).to eq(true)
+        end
+      end
+    end
   end
 
   describe '#concurrency' do
