@@ -21,18 +21,22 @@ RSpec.describe Eventboss::Configuration do
       after { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION'] = nil }
 
       context 'when false' do
-        before { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION'] = 'false' }
+        %w(false False FALSE not_know).each do |falsey_value|
+          before { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION'] = falsey_value }
 
-        it 'returns false' do
-          expect(subject.raise_on_missing_configuration).to eq(false)
+          it "returns false for #{falsey_value}" do
+            expect(subject.raise_on_missing_configuration).to eq(false)
+          end
         end
       end
 
       context 'when true' do
-        before { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION'] = 'true' }
+        %w(true TRUE True).each do |truthy_value|
+          before { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION'] = 'true' }
 
-        it 'returns true' do
-          expect(subject.raise_on_missing_configuration).to eq(true)
+          it "returns true for #{truthy_value}" do
+            expect(subject.raise_on_missing_configuration).to eq(true)
+          end
         end
       end
     end
