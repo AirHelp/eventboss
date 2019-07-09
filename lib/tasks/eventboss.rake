@@ -15,7 +15,13 @@ namespace :eventboss do
 
       abort 'At least event name should be passed as argument' unless event_name
 
-      queue_name = "#{Eventboss.configuration.eventboss_app_name}#{Eventboss.configuration.sns_sqs_name_infix}#{source_app}#{event_name}-#{Eventboss.env}"
+      queue_name = [
+        Eventboss.configuration.eventboss_app_name,
+        Eventboss.configuration.sns_sqs_name_infix,
+        source_app,
+        event_name,
+        Eventboss.env
+      ].join('-')
       queue = Eventboss::Queue.new("#{queue_name}-deadletter")
       send_queue = Eventboss::Queue.new(queue_name)
 
