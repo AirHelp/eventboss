@@ -29,6 +29,10 @@ describe Eventboss::Runner do
 
       # Sending the signal
       Process.kill 'SIGTERM', fork_pid
+
+      # Verify is fork's exist status is 0
+      fork_exit_status = Process.waitall.first.last.exitstatus
+      expect(fork_exit_status).to eq 0
     end
   end
 end
