@@ -23,6 +23,8 @@ module Eventboss
 
     def start
       logger.info("Starting #{@workers.size} workers, #{@pollers.size} pollers", 'launcher')
+      setup_signals
+
       @pollers.each(&:start)
       @workers.each(&:start)
     end
@@ -63,6 +65,16 @@ module Eventboss
     end
 
     private
+
+    def setup_signals
+      Signal.trap 'SIGTERM' do
+        logger.info('Received SIGTERM signal, gracefully shutdowning...', 'launcher')
+        stop
+
+        raise(SignalException, 'SIGTERM') if @options[:raise_exception_on_sigterm]
+        exit 0
+      end
+    end
 
     def worker_count
       @options.fetch(:worker_count, [2, Concurrent.processor_count].max)
