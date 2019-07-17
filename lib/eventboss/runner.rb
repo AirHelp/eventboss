@@ -60,11 +60,11 @@ module Eventboss
       def setup_signals(signals)
         self_read, self_write = IO.pipe
 
-        signals.each { |signal|
+        signals.each do |signal|
           trap signal do
             self_write.puts signal
           end
-        }
+        end
 
         self_read
       end
