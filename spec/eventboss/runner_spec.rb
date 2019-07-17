@@ -4,9 +4,10 @@ describe Eventboss::Runner do
   describe 'handling signals' do
     let(:default_sigterm_signal) { Signal.trap 'SIGTERM', 'SYSTEM_DEFAULT' }
     let(:queue) { double('queue', name: 'name', url: 'url') }
+    let(:client_mock) { double }
     let(:configuration) do
       Eventboss::Configuration.new.tap do |config|
-        config.sqs_client = double
+        config.sqs_client = client_mock
       end
     end
 
@@ -16,6 +17,7 @@ describe Eventboss::Runner do
     it 'traps SIGTERM and handles it gracefully' do
       fork_pid = fork do
         expect(Eventboss::QueueListener).to receive(:list).and_return([queue])
+        expect(client_mock).to receive(:receive_message).and_return(double(messages: [1, 2, 3]))
         expect(Eventboss).to receive(:configuration).and_return(configuration)
 
         # Expect graceful stop
@@ -30,7 +32,7 @@ describe Eventboss::Runner do
       # Sending the signal
       Process.kill 'SIGTERM', fork_pid
 
-      # Verify is fork's exist status is 0
+      # Verify if fork's exist status is 0
       fork_exit_status = Process.waitall.first.last.exitstatus
       expect(fork_exit_status).to eq 0
     end

@@ -15,8 +15,8 @@ module Eventboss
         self_read = setup_signals([:SIGTERM])
 
         begin
-          handle_signals(self_read, launcher)
           launcher.start
+          handle_signals(self_read, launcher)
         rescue Interrupt
           launcher.stop
           exit 0
