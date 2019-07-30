@@ -4,7 +4,7 @@ namespace :eventboss do
   namespace :deadletter do
     desc 'Reload deadletter queue'
     task :reload, [:event_name, :source_app, :max_messages] do |_, args|
-      source_app = args[:source_app] ? "#{args[:source_app]}-" : ''
+      source_app = args[:source_app]
       event_name = args[:event_name]
 
       # Zero means, fetch all messages
