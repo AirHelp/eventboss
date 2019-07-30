@@ -56,10 +56,6 @@ module Eventboss
       )
     end
 
-    def listen
-      Eventboss::Runner.start
-    end
-
     def launch
       Eventboss::Runner.launch
     end

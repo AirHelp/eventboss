@@ -5,10 +5,10 @@ describe Eventboss do
     expect(Eventboss::VERSION).not_to be nil
   end
 
-  context '#start' do
-    it 'runs start on runner' do
-      expect(Eventboss::Runner).to receive(:start)
-      Eventboss.listen
+  describe '#launch' do
+    it 'runs launch on runner' do
+      expect(Eventboss::Runner).to receive(:launch)
+      Eventboss.launch
     end
   end
 

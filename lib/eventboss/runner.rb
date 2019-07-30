@@ -1,5 +1,7 @@
 module Eventboss
   class Runner
+    extend Logging
+
     class << self
       def launch
         queues = Eventboss::QueueListener.list
@@ -10,12 +12,11 @@ module Eventboss
 
         launcher = Launcher.new(queues, client, worker_count: config.concurrency)
 
-        self_read, _self_write = IO.pipe
+        self_read = setup_signals([:SIGTERM])
+
         begin
           launcher.start
-          while (_readable_io = IO.select([self_read]))
-            # handle_signal(readable_io.first[0].gets.strip)
-          end
+          handle_signals(self_read, launcher)
         rescue Interrupt
           launcher.stop
           exit 0
@@ -43,15 +44,38 @@ module Eventboss
 
         manager.start
 
-        self_read, self_write = IO.pipe
+        self_read = setup_signals([:SIGTERM])
+
         begin
-          while (readable_io = IO.select([self_read]))
-            signal = readable_io.first[0].gets.strip
-            # handle_signal(signal)
-          end
+          handle_signals(self_read)
         rescue Interrupt
           executor.shutdown
           executor.wait_for_termination
+          exit 0
+        end
+      end
+
+      private
+
+      def setup_signals(signals)
+        self_read, self_write = IO.pipe
+
+        signals.each do |signal|
+          trap signal do
+            self_write.puts signal
+          end
+        end
+
+        self_read
+      end
+
+
+      def handle_signals(self_read, launcher)
+        while readable_io = IO.select([self_read])
+          signal = readable_io.first[0].gets.strip
+          logger.info("Received #{ signal } signal, gracefully shutdowning...", 'runner')
+
+          launcher.stop
           exit 0
         end
       end
