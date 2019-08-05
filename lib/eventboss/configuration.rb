@@ -11,7 +11,6 @@ module Eventboss
                 :eventboss_account_id,
                 :aws_access_key_id,
                 :aws_secret_access_key,
-                :polling_strategy,
                 :aws_sns_endpoint,
                 :aws_sqs_endpoint,
                 :sns_sqs_name_infix
@@ -79,12 +78,6 @@ module Eventboss
 
     def aws_sns_endpoint
       defined_or_default('aws_sns_endpoint') { ENV['AWS_SNS_ENDPOINT'] }
-    end
-
-    def polling_strategy
-      defined_or_default('polling_strategy') do
-        lambda { |queues| Eventboss::Polling::Basic.new(queues) }
-      end
     end
 
     def sns_sqs_name_infix

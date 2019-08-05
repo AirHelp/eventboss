@@ -113,16 +113,6 @@ Eventboss.configure do |config|
 end
 ```
 
-### Polling strategy
-
-Default is `Eventboss::Polling::Basic`. See `eventboss/polling/*` for other options. The configuration should be a `lambda` like so:
-
-```ruby
-Eventboss.configure do |config|
-  config.polling_strategy = lambda { |queues| Eventboss::Polling::TimedRoundRobin.new(queues) }
-end
-```
-
 ## Topics & Queues naming convention
 
 The SNSes should be name in the following pattern:
