@@ -26,9 +26,9 @@ namespace :eventboss do
       queue = Eventboss::Queue.new("#{queue_name}-deadletter")
       send_queue = Eventboss::Queue.new(queue_name)
 
-      puts "[#{task.name}]   #{queue.url}"
-      puts "[#{task.name}]   to"
-      puts "[#{task.name}]   #{send_queue.url}"
+      puts "[#{task.name}] #{queue.url}"
+      puts "[#{task.name}] to"
+      puts "[#{task.name}] #{send_queue.url}"
 
       fetcher = Eventboss::Fetcher.new(Eventboss.configuration)
       client = fetcher.client
