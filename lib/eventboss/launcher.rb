@@ -23,6 +23,7 @@ module Eventboss
 
     def start
       logger.info("Starting #{@workers.size} workers, #{@pollers.size} pollers", 'launcher')
+
       @pollers.each(&:start)
       @workers.each(&:start)
     end
