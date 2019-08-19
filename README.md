@@ -102,6 +102,21 @@ AWS_SNS_ENDPOINT=http://localhost:4575 # when using with localstack
 AWS_SQS_ENDPOINT=http://localhost:4576 # when using with localstack
 ```
 
+Be aware that `eventbus:deadletter:reload` rake task won't load your configuration if you are not using ENVs
+ in non Rails app, although to make it work you can extend your `Rakefile` with:
+
+```ruby
+load File.join(Gem::Specification.find_by_name('eventboss').gem_dir, 'lib', 'tasks', 'eventboss.rake')
+
+task :environment do
+  # Load your environment
+  # Example:
+  # require_relative 'config/application'
+end
+
+task 'eventboss:deadletter:reload': :environment
+```
+
 ### Logging and error handling
 To have more verbose logging, set `log_level` in configuration (default is `info`).
 

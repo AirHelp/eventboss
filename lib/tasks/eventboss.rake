@@ -21,7 +21,7 @@ namespace :eventboss do
         source_app,
         event_name,
         Eventboss.env
-      ].join('-')
+      ].compact.join('-')
       puts "[#{task.name}] Reloading #{queue_name}-deadletter (max: #{ max_messages }, batch: #{ batch_size })"
       queue = Eventboss::Queue.new("#{queue_name}-deadletter")
       send_queue = Eventboss::Queue.new(queue_name)
