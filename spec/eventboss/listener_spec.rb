@@ -1,4 +1,6 @@
-require "spec_helper"
+# frozen_string_literal: true
+
+require 'spec_helper'
 
 describe Eventboss::Listener do
   class Listener1
@@ -11,6 +13,11 @@ describe Eventboss::Listener do
     eventboss_options event_name: 'transaction_created'
   end
 
+  class OverrideListener
+    include Eventboss::Listener
+    eventboss_options source_app: 'app1', app_name: 'custom', event_name: 'transaction_created'
+  end
+
   context '#jid' do
     it 'creates unique jid for the job' do
       expect(Listener1.new.jid).not_to be_nil
@@ -21,8 +28,9 @@ describe Eventboss::Listener do
   context '#ACTIVE_LISTENERS' do
     it 'adds the class to active listeners hash' do
       expect(Eventboss::Listener::ACTIVE_LISTENERS).to eq(
-        "transaction_created" => GenericListener1,
-        "app1-transaction_created" => Listener1
+        'eventboss-transaction_created' => GenericListener1,
+        'eventboss-app1-transaction_created' => Listener1,
+        'custom-eventboss-app1-transaction_created' => OverrideListener
       )
     end
   end

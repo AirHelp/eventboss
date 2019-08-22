@@ -18,10 +18,15 @@ module Eventboss
 
     module ClassMethods
       def eventboss_options(opts)
-        source_app = opts[:source_app] ? "#{opts[:source_app]}-" : ""
+        source_app = opts[:source_app]
         event_name = opts[:event_name]
+        app_name = opts[:app_name] || Eventboss.configuration.eventboss_app_name
+        infix = opts[:infix] || Eventboss.configuration.sns_sqs_name_infix
+        env = Eventboss.env
 
-        ACTIVE_LISTENERS["#{source_app}#{event_name}"] = self
+        queue_name = [app_name, infix, source_app, event_name, env].compact.join('-')
+
+        ACTIVE_LISTENERS[queue_name] = self
       end
     end
   end
