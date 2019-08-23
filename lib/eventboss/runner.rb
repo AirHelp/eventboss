@@ -23,38 +23,6 @@ module Eventboss
         end
       end
 
-      def start
-        configuration = Eventboss.configuration
-
-        queue_listeners = Eventboss::QueueListener.list
-        Eventboss::Instrumentation.add(queue_listeners)
-        polling_strategy = configuration.polling_strategy.call(queue_listeners.keys)
-
-        fetcher = Eventboss::Fetcher.new(configuration)
-        executor = Concurrent.global_io_executor
-
-        manager = Eventboss::Manager.new(
-          fetcher,
-          polling_strategy,
-          executor,
-          queue_listeners,
-          configuration.concurrency,
-          configuration.error_handlers
-        )
-
-        manager.start
-
-        self_read = setup_signals([:SIGTERM])
-
-        begin
-          handle_signals(self_read)
-        rescue Interrupt
-          executor.shutdown
-          executor.wait_for_termination
-          exit 0
-        end
-      end
-
       private
 
       def setup_signals(signals)
@@ -68,7 +36,6 @@ module Eventboss
 
         self_read
       end
-
 
       def handle_signals(self_read, launcher)
         while readable_io = IO.select([self_read])

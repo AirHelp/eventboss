@@ -19,11 +19,8 @@ require 'eventboss/worker'
 require 'eventboss/fetcher'
 require 'eventboss/publisher'
 require 'eventboss/sender'
-require 'eventboss/manager'
 require 'eventboss/runner'
 require 'eventboss/logger'
-require 'eventboss/polling/basic'
-require 'eventboss/polling/timed_round_robin'
 require 'eventboss/extensions'
 
 # For Rails use railtie, for plain Ruby apps use custom scripts loader
