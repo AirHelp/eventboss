@@ -32,7 +32,7 @@ RSpec.describe Eventboss::Configuration do
 
       context 'when true' do
         %w(true TRUE True).each do |truthy_value|
-          before { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION'] = 'true' }
+          before { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION'] = truthy_value }
 
           it "returns true for #{truthy_value}" do
             expect(subject.raise_on_missing_configuration).to eq(true)
