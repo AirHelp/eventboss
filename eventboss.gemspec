@@ -20,7 +20,6 @@ Gem::Specification.new do |spec|
   spec.executables   = ["eventboss"]
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "concurrent-ruby", "~> 1.0", ">= 1.0.5"
   spec.add_dependency "aws-sdk-sqs", ">= 1.3.0"
   spec.add_dependency "aws-sdk-sns", ">= 1.1.0"
   spec.add_dependency "dotenv", "~> 2.1", ">= 2.1.1"
