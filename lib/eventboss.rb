@@ -1,6 +1,5 @@
 require 'aws-sdk-sqs'
 require 'aws-sdk-sns'
-require 'concurrent'
 require 'securerandom'
 
 require 'eventboss/version'

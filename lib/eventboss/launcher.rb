@@ -66,7 +66,7 @@ module Eventboss
     private
 
     def worker_count
-      @options.fetch(:worker_count, [2, Concurrent.processor_count].max)
+      @options.fetch(:worker_count, 2)
     end
 
     def new_worker(id)
