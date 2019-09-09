@@ -17,10 +17,7 @@ OptionParser.new do |parser|
 end.parse!
 
 begin
-  logger = Eventboss::Logger
-
   require 'rails'
-  logger.debug('Loading rails...')
   if ::Rails::VERSION::MAJOR < 4
     require File.expand_path('config/environment.rb')
   else
@@ -28,6 +25,8 @@ begin
     require File.expand_path('config/environment.rb')
   end
 
+  logger = Eventboss.logger
+  logger.debug('Loaded rails...')
   # Due to a changes introduced in Rails 6 regarding autoloading
   # we need to determine how to perform eager_load
   # @see https://weblog.rubyonrails.org/2019/2/22/zeitwerk-integration-in-rails-6-beta-2/
@@ -37,6 +36,7 @@ begin
     ::Rails.application.eager_load!
   end
 rescue LoadError
+  logger = Eventboss.logger
   logger.debug('Seems like not a Rails app')
 
   if options[:require].nil?

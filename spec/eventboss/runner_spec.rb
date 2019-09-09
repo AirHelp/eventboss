@@ -8,6 +8,7 @@ describe Eventboss::Runner do
     let(:configuration) do
       Eventboss::Configuration.new.tap do |config|
         config.sqs_client = client_mock
+        config.logger = Logger.new(IO::NULL)
       end
     end
 

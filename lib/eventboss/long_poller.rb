@@ -43,7 +43,7 @@ module Eventboss
 
     def fetch_and_dispatch
       fetch_messages.each do |message|
-        logger.debug("enqueueing message #{message.message_id}", id)
+        logger.debug(id) { "enqueueing message #{message.message_id}" }
         @bus << UnitOfWork.new(queue, listener, message)
       end
     end
@@ -64,7 +64,7 @@ module Eventboss
     private
 
     def fetch_messages
-      logger.debug('fetching messages', id)
+      logger.debug(id) { 'fetching messages' }
       @client.receive_message(
         queue_url: queue.url,
         max_number_of_messages: 10,

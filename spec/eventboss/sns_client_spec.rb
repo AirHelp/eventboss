@@ -15,7 +15,7 @@ RSpec.describe Eventboss::SnsClient do
       end
 
       it 'logs info' do
-        expect(Eventboss::Logger).to receive(:info).and_call_original
+        expect(Eventboss.logger).to receive(:info).and_call_original
         subject
       end
 

@@ -22,14 +22,14 @@ module Eventboss
     end
 
     def start
-      logger.info("Starting #{@workers.size} workers, #{@pollers.size} pollers", 'launcher')
+      logger.info('launcher') { "Starting #{@workers.size} workers, #{@pollers.size} pollers" }
 
       @pollers.each(&:start)
       @workers.each(&:start)
     end
 
     def stop
-      logger.info('Gracefully shutdown', 'launcher')
+      logger.info('launcher') { 'Gracefully shutdown' }
 
       @bus.clear
       @pollers.each(&:terminate)
@@ -42,7 +42,7 @@ module Eventboss
     def hard_shutdown
       return if @pollers.empty? && @workers.empty?
 
-      logger.info("Killing remaining #{@pollers.size} pollers, #{@workers.size} workers", 'launcher')
+      logger.info('launcher') { "Killing remaining #{@pollers.size} pollers, #{@workers.size} workers" }
       @pollers.each(&:kill)
       @workers.each(&:kill)
     end
@@ -52,7 +52,7 @@ module Eventboss
         @workers.delete(worker)
         @workers << new_worker(worker.id).tap(&:start) if restart
       end
-      logger.debug("Worker #{worker.id} stopped, restart: #{restart}", 'launcher')
+      logger.debug('launcher') { "Worker #{worker.id} stopped, restart: #{restart}" }
     end
 
     def poller_stopped(poller, restart: false)
@@ -60,7 +60,7 @@ module Eventboss
         @pollers.delete(poller)
         @pollers << new_poller(poller.queue, poller.listener).tap(&:start) if restart
       end
-      logger.debug("Poller #{poller.id} stopped, restart: #{restart}", 'launcher')
+      logger.debug('launcher') { "Poller #{poller.id} stopped, restart: #{restart}" }
     end
 
     private
@@ -82,7 +82,7 @@ module Eventboss
       while @pollers.any? || @workers.any?
         break if (attempts += 1) > shutdown_attempts
         sleep shutdown_delay
-        logger.info("Waiting for #{@pollers.size} pollers, #{@workers.size} workers", 'launcher')
+        logger.info('launcher') { "Waiting for #{@pollers.size} pollers, #{@workers.size} workers" }
       end
     end
 
