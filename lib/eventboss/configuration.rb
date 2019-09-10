@@ -22,7 +22,7 @@ module Eventboss
     def error_handlers
       defined_or_default('error_handlers') do
         [ErrorHandlers::Logger.new].tap do |handlers|
-          handlers << ErrorHandlers::DbConnectionDropHandler.new if defined?(Rails)
+          handlers << ErrorHandlers::DbConnectionDropHandler.new if defined?(::ActiveRecord::StatementInvalid)
         end
       end
     end
