@@ -9,4 +9,3 @@ module Eventboss
     end
   end
 end
-
