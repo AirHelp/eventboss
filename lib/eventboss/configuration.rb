@@ -20,7 +20,11 @@ module Eventboss
     end
 
     def error_handlers
-      defined_or_default('error_handlers') { [ErrorHandlers::Logger.new] }
+      defined_or_default('error_handlers') do
+        [ErrorHandlers::Logger.new].tap do |handlers|
+          handlers << ErrorHandlers::DbConnectionDropHandler.new if defined?(::ActiveRecord::StatementInvalid)
+        end
+      end
     end
 
     def concurrency
