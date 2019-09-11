@@ -1,1 +1,1 @@
-load 'tasks/eventboss.rake'
+load 'tasks/eventboss.rake' if defined?(Rake:Task)
