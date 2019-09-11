@@ -9,7 +9,7 @@ module Eventboss
     # :nodoc:
     module NewRelic
       def self.install(queue_listeners)
-        Eventboss::Logger.logger.info('Loaded NewRelic instrumentation')
+        Eventboss.logger.info('Loaded NewRelic instrumentation')
         queue_listeners.each_value do |listener_class|
           listener_class.include(::NewRelic::Agent::Instrumentation::ControllerInstrumentation)
           listener_class.add_transaction_tracer(:receive, category: 'OtherTransaction/EventbossJob')

@@ -46,7 +46,7 @@ module Eventboss
 
     class Mock
       def publish(_)
-        Eventboss::Logger.info('Eventboss is not configured. Skipping message publishing!')
+        Eventboss.logger.info('Eventboss is not configured. Skipping message publishing!')
         return
       end
     end

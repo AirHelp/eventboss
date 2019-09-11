@@ -10,3 +10,5 @@ class FixedTimer
     @time
   end
 end
+
+Eventboss.configuration.logger = Logger.new(IO::NULL)

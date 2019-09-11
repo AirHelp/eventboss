@@ -19,7 +19,6 @@ require 'eventboss/fetcher'
 require 'eventboss/publisher'
 require 'eventboss/sender'
 require 'eventboss/runner'
-require 'eventboss/logger'
 require 'eventboss/extensions'
 
 # For Rails use railtie, for plain Ruby apps use custom scripts loader
@@ -66,6 +65,10 @@ module Eventboss
 
     def configuration
       @_configuration ||= Configuration.new
+    end
+
+    def logger
+      Thread.current[:ah_eventboss_logger] ||= configuration.logger
     end
   end
 end

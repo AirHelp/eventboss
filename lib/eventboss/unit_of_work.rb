@@ -10,13 +10,14 @@ module Eventboss
       @queue = queue
       @listener = listener
       @message = message
+      @logger = logger
     end
 
     def run(client)
-      logger.debug('Started', @message.message_id)
+      logger.debug(@message.message_id) { 'Started' }
       processor = @listener.new
       processor.receive(JSON.parse(@message.body))
-      logger.info('Finished', @message.message_id)
+      logger.debug(@message.message_id) { 'Finished' }
     rescue StandardError => exception
       handle_exception(exception, processor: processor, message_id: @message.message_id)
     else
@@ -27,7 +28,7 @@ module Eventboss
       client.delete_message(
         queue_url: @queue.url, receipt_handle: @message.receipt_handle
       )
-      logger.debug('Deleting', @message.message_id)
+      logger.debug(@message.message_id) { 'Deleting' }
     end
   end
 end

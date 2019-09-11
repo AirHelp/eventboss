@@ -40,7 +40,7 @@ module Eventboss
       def handle_signals(self_read, launcher)
         while readable_io = IO.select([self_read])
           signal = readable_io.first[0].gets.strip
-          logger.info("Received #{ signal } signal, gracefully shutdowning...", 'runner')
+          logger.info('runner') { "Received #{ signal } signal, gracefully shutdowning..." }
 
           launcher.stop
           exit 0

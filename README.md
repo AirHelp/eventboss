@@ -85,6 +85,7 @@ Eventboss.configure do |config|
   config.concurrency = 10
   # when using custom clients like localstack
   config.sns_client = client # Custom SNS Client can be used, i.e. to use local mock, see: https://github.com/phstc/shoryuken/wiki/Using-a-local-mock-SQS-server
+  config.logger = MyLogger.new
   config.sqs_client = Aws::SQS::Client.new(endpoint: 'http://localstack:4576', region: 'us-east-1', credentials: Aws::Credentials.new('fake', 'fake'))
 end
 ```

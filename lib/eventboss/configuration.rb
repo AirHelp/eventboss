@@ -4,6 +4,7 @@ module Eventboss
                 :error_handlers,
                 :concurrency,
                 :log_level,
+                :logger,
                 :sns_client,
                 :sqs_client,
                 :eventboss_region,
@@ -33,6 +34,12 @@ module Eventboss
 
     def log_level
       defined_or_default('log_level') { :info }
+    end
+
+    def logger
+      defined_or_default('logger') do
+        ::Logger.new(STDOUT, level: Eventboss.configuration.log_level)
+      end
     end
 
     def sns_client

@@ -2,7 +2,7 @@ module Eventboss
   # Logging include logging helpers
   module Logging
     def logger
-      Eventboss::Logger
+      Eventboss.logger
     end
   end
 end
