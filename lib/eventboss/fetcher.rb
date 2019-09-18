@@ -16,14 +16,6 @@ module Eventboss
       @client.delete_message(queue_url: queue.url, receipt_handle: message.receipt_handle)
     end
 
-    def change_message_visibility(queue, message, visibility_timeout)
-      @client.change_message_visibility(
-        queue_url: queue.url,
-        receipt_handle: message.receipt_handle,
-        visibility_timeout: visibility_timeout
-      )
-    end
-
     private
 
     def max_no_of_messages(limit)
