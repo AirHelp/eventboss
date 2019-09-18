@@ -2,9 +2,7 @@ require 'spec_helper'
 
 describe Eventboss::UnitOfWork do
   class Listener
-    def jid; end
-
-    def receive; end
+    include Eventboss::Listener
   end
 
   subject do

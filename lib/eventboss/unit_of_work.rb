@@ -21,16 +21,16 @@ module Eventboss
     rescue StandardError => exception
       handle_exception(exception, processor: processor, message_id: @message.message_id)
     else
-      cleanup(client) unless @listener.postponed_by
+      cleanup(client) unless processor.postponed_by
     ensure
-      change_message_visibility(client) if @listener.postponed_by
+      change_message_visibility(client, processor.postponed_by) if processor.postponed_by
     end
 
-    def change_message_visibility(client)
+    def change_message_visibility(client, postponed_by)
       client.change_message_visibility(
         queue_url: @queue.url,
         receipt_handle: @message.receipt_handle,
-        visibility_timeout: @listener.postponed_by
+        visibility_timeout: postponed_by
       )
     end
 
