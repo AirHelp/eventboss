@@ -21,7 +21,7 @@ module Eventboss
     rescue StandardError => exception
       handle_exception(exception, processor: processor, message_id: @message.message_id)
     else
-      cleanup(client) unless postponed_by
+      cleanup(client) unless @postponed_by
     ensure
       change_message_visibility(client) if @postponed_by
     end
