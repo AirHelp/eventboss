@@ -57,5 +57,29 @@ RSpec.describe Eventboss::Configuration do
         expect(subject).to eq(10)
       end
     end
+
+    context 'when set through configuration' do
+      context 'when set a correct string value' do
+        before { configuration.concurrency = '11' }
+
+        it 'returns int value' do
+          expect(subject).to eq(11)
+        end
+      end
+
+      context 'when set an incorrect string value' do
+        subject { configuration.concurrency = 'incorrect value' }
+
+        it 'raises an error' do
+          expect { subject }.to raise_error(ArgumentError)
+        end
+      end
+
+      context 'when set an int value' do
+        before { configuration.concurrency = 11 }
+
+        it { expect(subject).to eq(11) }
+      end
+    end
   end
 end

@@ -32,6 +32,10 @@ module Eventboss
       defined_or_default('concurrency') { ENV['EVENTBUS_CONCURRENCY'] ? ENV['EVENTBUS_CONCURRENCY'].to_i : 25 }
     end
 
+    def concurrency=(value)
+      defined_or_default('concurrency') { Integer(value) }
+    end
+
     def log_level
       defined_or_default('log_level') { :info }
     end
