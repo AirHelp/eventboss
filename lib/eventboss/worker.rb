@@ -20,7 +20,7 @@ module Eventboss
 
     def run
       while (work = @bus.pop)
-        work.run
+        run_work(work)
       end
       @launcher.worker_stopped(self)
     rescue Eventboss::Shutdown
@@ -30,6 +30,12 @@ module Eventboss
       # Restart the worker in case of hard exception
       # Message won't be delete from SQS and will be visible later
       @launcher.worker_stopped(self, restart: true)
+    end
+
+    def run_work(work)
+      server_middleware.invoke(*args_for(work)) do
+        work.run
+      end
     end
 
     def terminate(wait = false)
@@ -50,6 +56,14 @@ module Eventboss
     # stops the loop, by enqueuing falsey value
     def stop_token
       @bus << nil
+    end
+
+    def args_for(work)
+      [work.queue, work.listener, work.message]
+    end
+
+    def server_middleware
+      Eventboss.configuration.server_middleware
     end
   end
 end

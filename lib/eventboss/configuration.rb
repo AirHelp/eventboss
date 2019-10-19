@@ -118,6 +118,10 @@ module Eventboss
       end
     end
 
+    def server_middleware
+      @server_middleware ||= Middleware::Chain.new
+    end
+
     private
 
     def defined_or_default(variable_name)
