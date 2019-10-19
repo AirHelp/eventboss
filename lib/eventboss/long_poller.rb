@@ -44,7 +44,7 @@ module Eventboss
     def fetch_and_dispatch
       fetch_messages.each do |message|
         logger.debug(id) { "enqueueing message #{message.message_id}" }
-        @bus << UnitOfWork.new(queue, listener, message)
+        @bus << UnitOfWork.new(@client, queue, listener, message)
       end
     end
 

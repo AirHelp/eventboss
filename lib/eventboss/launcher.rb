@@ -70,7 +70,7 @@ module Eventboss
     end
 
     def new_worker(id)
-      Worker.new(self, id, @client, @bus)
+      Worker.new(self, id, @bus)
     end
 
     def new_poller(queue, listener)

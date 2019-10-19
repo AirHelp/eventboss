@@ -6,10 +6,9 @@ module Eventboss
 
     attr_reader :id
 
-    def initialize(launcher, id, client, bus)
+    def initialize(launcher, id, bus)
       @id = "worker-#{id}"
       @launcher = launcher
-      @client = client
       @bus = bus
       @thread = nil
     end
@@ -20,7 +19,7 @@ module Eventboss
 
     def run
       while (work = @bus.pop)
-        work.run(@client)
+        work.run
       end
       @launcher.worker_stopped(self)
     rescue Eventboss::Shutdown

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Eventboss::Worker do
   subject do
-    described_class.new(launcher, queue, client, bus)
+    described_class.new(launcher, queue, bus)
   end
 
   Work = Struct.new(:finished) do
@@ -19,7 +19,6 @@ describe Eventboss::Worker do
 
   let(:launcher) { instance_double('Eventboss::Launcher', worker_stopped: true) }
   let(:queue) { double('queue', url: 'url') }
-  let(:client) { double('client') }
   let(:bus) { [] }
 
   context 'when work has no errors' do
