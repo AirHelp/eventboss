@@ -6,11 +6,12 @@ module Eventboss
 
     attr_reader :id
 
-    def initialize(launcher, id, bus)
+    def initialize(launcher, id, bus, restart_on: [Exception])
       @id = "worker-#{id}"
       @launcher = launcher
       @bus = bus
       @thread = nil
+      @restart_on = restart_on
     end
 
     def start
@@ -24,7 +25,7 @@ module Eventboss
       @launcher.worker_stopped(self)
     rescue Eventboss::Shutdown
       @launcher.worker_stopped(self)
-    rescue Exception => exception
+    rescue *@restart_on => exception
       handle_exception(exception, worker_id: id)
       # Restart the worker in case of hard exception
       # Message won't be delete from SQS and will be visible later
