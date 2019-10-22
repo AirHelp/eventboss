@@ -118,6 +118,23 @@ end
 task 'eventboss:deadletter:reload': :environment
 ```
 
+Using eventboss.yml:
+```yaml
+concurrency: 10
+listeners:
+  # It doesn't make much sense to use both include and exclude.
+  include:
+    - MyListener # It will run only listed listeners (MyListener). If MyListener was listed in exclude it would be omitted as well.
+  exclude:
+    - OtherListener # When include option is not set it will run all listeners except listed here (OtherListener). When include is set it will run only included (but not excluded) listeners.
+```
+Yml config is optional and by default is loaded from `'./config/eventboss.yml'`.
+You can also pass config path as an argument:
+```bash
+eventboss -C my/custom/path/to/config.yml
+```
+Yml config content is merged to configuration last, which means it overwrites ENVs and `.configure`.
+
 ### Logging and error handling
 To have more verbose logging, set `log_level` in configuration (default is `info`).
 

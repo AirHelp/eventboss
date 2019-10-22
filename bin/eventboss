@@ -1,55 +1,13 @@
 #!/usr/bin/env ruby
 
-require 'rubygems'
-require 'dotenv'
-require 'eventboss'
-require 'optparse'
-
-Dotenv.load
-
-STDOUT.sync = true
-options = {}
-
-OptionParser.new do |parser|
-  parser.on('-r', '--require LIBRARY', 'Require custom app entrypoint') do |lib|
-    options[:require] = lib
-  end
-end.parse!
+require 'eventboss/cli'
 
 begin
-  require 'rails'
-  if ::Rails::VERSION::MAJOR < 4
-    require File.expand_path('config/environment.rb')
-  else
-    require File.expand_path('config/application.rb')
-    require File.expand_path('config/environment.rb')
-  end
-
-  logger = Eventboss.logger
-  logger.debug('Loaded rails...')
-  # Due to a changes introduced in Rails 6 regarding autoloading
-  # we need to determine how to perform eager_load
-  # @see https://weblog.rubyonrails.org/2019/2/22/zeitwerk-integration-in-rails-6-beta-2/
-  if ::Rails.try(:autoloaders).try(:zeitwerk_enabled?)
-    ::Zeitwerk::Loader.eager_load_all
-  else
-    ::Rails.application.eager_load!
-  end
-rescue LoadError
-  logger = Eventboss.logger
-  logger.debug('Seems like not a Rails app')
-
-  if options[:require].nil?
-    logger.warn('Please use -r to load a custom app entrypoint')
-    exit(0)
-  else
-    logger.debug("Loading #{options[:require]}")
-    require File.expand_path(options[:require])
-  end
+  cli = Eventboss::CLI.instance
+  cli.parse
+  cli.run
+rescue => e
+  STDERR.puts e.message
+  STDERR.puts e.backtrace.join("\n")
+  exit 1
 end
-
-logger.info('Starting eventboss...')
-logger.info('Active Listeners:')
-logger.info(Eventboss::QueueListener.list.to_s)
-
-Eventboss.launch

@@ -17,7 +17,7 @@ describe Eventboss::Runner do
 
     it 'traps SIGTERM and handles it gracefully' do
       fork_pid = fork do
-        expect(Eventboss::QueueListener).to receive(:list).and_return([queue])
+        expect(Eventboss::QueueListener).to receive(:list_active).and_return([queue])
         expect(client_mock).to receive(:receive_message).and_return(double(messages: [1, 2, 3]))
         expect(Eventboss).to receive(:configuration).and_return(configuration)
 

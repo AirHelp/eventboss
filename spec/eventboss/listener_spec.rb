@@ -1,14 +1,20 @@
 require "spec_helper"
 
 describe Eventboss::Listener do
-  class Listener1
-    include Eventboss::Listener
-    eventboss_options source_app: 'app1', event_name: 'transaction_created'
-  end
+  before do
+    stub_const 'Eventboss::Listener::ACTIVE_LISTENERS', {}
 
-  class GenericListener1
-    include Eventboss::Listener
-    eventboss_options event_name: 'transaction_created'
+    stub_const 'Listener1', Class.new
+    Listener1.class_eval do
+      include Eventboss::Listener
+      eventboss_options source_app: 'app1', event_name: 'transaction_created'
+    end
+
+    stub_const 'GenericListener1', Class.new
+    GenericListener1.class_eval do
+      include Eventboss::Listener
+      eventboss_options event_name: 'transaction_created'
+    end
   end
 
   context '#jid' do
