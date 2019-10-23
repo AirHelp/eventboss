@@ -29,8 +29,6 @@ module Eventboss
       boot_system
 
       Eventboss.logger.info('Starting eventboss...')
-      Eventboss.logger.info('Active Listeners:')
-      Eventboss.logger.info(Eventboss::QueueListener.select.to_s)
 
       Eventboss.launch
     end

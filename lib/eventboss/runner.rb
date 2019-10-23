@@ -14,6 +14,8 @@ module Eventboss
 
         self_read = setup_signals([:SIGTERM])
 
+        logger.info('Active Listeners:')
+        logger.info(queues.to_s)
         begin
           launcher.start
           handle_signals(self_read, launcher)
