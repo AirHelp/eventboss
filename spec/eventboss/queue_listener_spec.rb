@@ -34,7 +34,7 @@ describe Eventboss::QueueListener do
   describe '.select' do
     context 'with include arg' do
       it 'returns only included listeners' do
-        queue_listeners = Eventboss::QueueListener.select(include: ['Listener1'])
+        queue_listeners = Eventboss::QueueListener.select(include: ['Listener1'], exclude: nil)
         expect(queue_listeners[Eventboss::Queue.new("app1-eventboss-destapp1-transaction_created-#{Eventboss.env}")]).to eq(Listener1)
         expect(queue_listeners.count).to eq 1
       end
@@ -42,7 +42,7 @@ describe Eventboss::QueueListener do
 
     context 'with exclude arg' do
       it 'returns all not excluded listeners' do
-        queue_listeners = Eventboss::QueueListener.select(exclude: ['Listener3'])
+        queue_listeners = Eventboss::QueueListener.select(include: nil, exclude: ['Listener3'])
         expect(queue_listeners[Eventboss::Queue.new("app1-eventboss-destapp1-transaction_created-#{Eventboss.env}")]).to eq(Listener1)
         expect(queue_listeners[Eventboss::Queue.new("app1-eventboss-destapp2-file_uploaded-#{Eventboss.env}")]).to eq(Listener2)
         expect(queue_listeners.count).to eq 2

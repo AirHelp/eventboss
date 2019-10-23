@@ -4,7 +4,10 @@ module Eventboss
 
     class << self
       def launch
-        queues = Eventboss::QueueListener.select
+        queues = Eventboss::QueueListener.select(
+          include: Eventboss.configuration.listeners[:include],
+          exclude: Eventboss.configuration.listeners[:exclude]
+        )
         client = Eventboss.configuration.sqs_client
         config = Eventboss.configuration
 

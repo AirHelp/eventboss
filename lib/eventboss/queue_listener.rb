@@ -1,10 +1,7 @@
 module Eventboss
   class QueueListener
     class << self
-      def select(
-        include: Eventboss.configuration.listeners[:include],
-        exclude: Eventboss.configuration.listeners[:exclude]
-      )
+      def select(include:, exclude:)
         listeners = list.values.map(&:name)
 
         listeners &= include if include
