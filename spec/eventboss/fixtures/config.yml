@@ -1,0 +1,7 @@
+---
+concurrency: 5
+listeners:
+  include:
+    - Listener1
+  exclude:
+    - Listener2

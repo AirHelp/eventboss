@@ -1,5 +1,11 @@
 module Eventboss
   class Configuration
+    OPTS_ALLOWED_IN_CONFIG_FILE = %i[
+      concurrency
+      sns_sqs_name_infix
+      listeners
+    ]
+
     attr_writer :raise_on_missing_configuration,
                 :error_handlers,
                 :concurrency,
@@ -14,7 +20,9 @@ module Eventboss
                 :aws_secret_access_key,
                 :aws_sns_endpoint,
                 :aws_sqs_endpoint,
-                :sns_sqs_name_infix
+                :sns_sqs_name_infix,
+                :listeners
+
 
     def raise_on_missing_configuration
       defined_or_default('raise_on_missing_configuration') { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION']&.downcase == 'true' }
@@ -93,6 +101,10 @@ module Eventboss
 
     def sns_sqs_name_infix
       defined_or_default('sns_sqs_name_infix') { ENV['EVENTBUS_SQS_SNS_NAME_INFIX'] || 'eventboss' }
+    end
+
+    def listeners
+      defined_or_default('listeners') { {} }
     end
 
     private

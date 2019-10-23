@@ -4,7 +4,10 @@ module Eventboss
 
     class << self
       def launch
-        queues = Eventboss::QueueListener.list
+        queues = Eventboss::QueueListener.select(
+          include: Eventboss.configuration.listeners[:include],
+          exclude: Eventboss.configuration.listeners[:exclude]
+        )
         client = Eventboss.configuration.sqs_client
         config = Eventboss.configuration
 
@@ -14,6 +17,8 @@ module Eventboss
 
         self_read = setup_signals([:SIGTERM])
 
+        logger.info('Active Listeners:')
+        logger.info(queues.to_s)
         begin
           launcher.start
           handle_signals(self_read, launcher)
