@@ -30,7 +30,7 @@ module Eventboss
 
       Eventboss.logger.info('Starting eventboss...')
       Eventboss.logger.info('Active Listeners:')
-      Eventboss.logger.info(Eventboss::QueueListener.list_active.to_s)
+      Eventboss.logger.info(Eventboss::QueueListener.select.to_s)
 
       Eventboss.launch
     end
@@ -100,7 +100,7 @@ module Eventboss
           if Eventboss::Configuration::OPTS_ALLOWED_IN_CONFIG_FILE.include?(option_name)
             Eventboss.configuration.public_send("#{option_name}=", option)
           else
-            Eventboss.logger.warn("Not supported option (#{option_name}) provided in config file.")
+            Eventboss.logger.error("Not supported option (#{option_name}) provided in config file.")
             exit(1)
           end
         end

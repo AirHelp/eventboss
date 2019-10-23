@@ -38,7 +38,7 @@ RSpec.describe Eventboss::CLI do
 
         it 'exits with status 1' do
           expect {
-            expect(Eventboss.logger).to receive(:warn).with("Not supported option (concurrency) provided in config file.")
+            expect(Eventboss.logger).to receive(:error).with("Not supported option (concurrency) provided in config file.")
             subject.parse(%w[eventboss -C ./spec/eventboss/fixtures/config.yml])
           }.to raise_error SystemExit
         end
