@@ -20,8 +20,12 @@ module Eventboss
       def eventboss_options(opts)
         source_app = opts[:source_app] ? "#{opts[:source_app]}-" : ""
         event_name = opts[:event_name]
+        destination_app = opts[:destination_app]
 
-        ACTIVE_LISTENERS["#{source_app}#{event_name}"] = self
+        ACTIVE_LISTENERS["#{source_app}#{event_name}"] = {
+          listener: self,
+          destination_app: destination_app
+        }
       end
     end
   end

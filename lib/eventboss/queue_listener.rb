@@ -13,17 +13,17 @@ module Eventboss
       private
 
       def list
-        Hash[Eventboss::Listener::ACTIVE_LISTENERS.map do |src_app_event, listener|
+        Hash[Eventboss::Listener::ACTIVE_LISTENERS.map do |src_app_event, opts|
           [
             Eventboss::Queue.new(
               [
-                Eventboss.configuration.eventboss_app_name,
+                opts[:destination_app] || Eventboss.configuration.eventboss_app_name,
                 Eventboss.configuration.sns_sqs_name_infix,
                 src_app_event,
                 Eventboss.env
               ].join('-')
             ),
-            listener
+            opts[:listener]
           ]
         end]
       end

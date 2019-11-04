@@ -27,7 +27,7 @@ describe Eventboss::QueueListener do
     stub_const 'Listener3', Class.new
     Listener3.class_eval do
       include Eventboss::Listener
-      eventboss_options source_app: 'destapp3', event_name: 'file_destroyed'
+      eventboss_options source_app: 'destapp3', event_name: 'file_destroyed', destination_app: 'dest_app'
     end
   end
 
@@ -55,7 +55,7 @@ describe Eventboss::QueueListener do
           exclude: %w[Listener1 Listener2],
           include: %w[Listener2 Listener3]
         )
-        expect(queue_listeners[Eventboss::Queue.new("app1-eventboss-destapp3-file_destroyed-#{Eventboss.env}")]).to eq(Listener3)
+        expect(queue_listeners[Eventboss::Queue.new("dest_app-eventboss-destapp3-file_destroyed-#{Eventboss.env}")]).to eq(Listener3)
         expect(queue_listeners.count).to eq 1
       end
     end

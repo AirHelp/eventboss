@@ -13,7 +13,7 @@ describe Eventboss::Listener do
     stub_const 'GenericListener1', Class.new
     GenericListener1.class_eval do
       include Eventboss::Listener
-      eventboss_options event_name: 'transaction_created'
+      eventboss_options event_name: 'transaction_created', destination_app: 'dest_app'
     end
   end
 
@@ -27,8 +27,8 @@ describe Eventboss::Listener do
   context '#ACTIVE_LISTENERS' do
     it 'adds the class to active listeners hash' do
       expect(Eventboss::Listener::ACTIVE_LISTENERS).to eq(
-        "transaction_created" => GenericListener1,
-        "app1-transaction_created" => Listener1
+        "transaction_created" => { listener: GenericListener1, destination_app: 'dest_app' },
+        "app1-transaction_created" => { listener: Listener1, destination_app: nil }
       )
     end
   end
