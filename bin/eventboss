@@ -2,6 +2,8 @@
 
 require 'eventboss/cli'
 
+STDOUT.sync = true
+
 begin
   cli = Eventboss::CLI.instance
   cli.parse
