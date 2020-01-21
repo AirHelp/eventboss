@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Eventboss::UnitOfWork do
   subject do
-    described_class.new(queue, listener_class, message)
+    described_class.new(client, queue, listener_class, message)
   end
 
   let(:queue) { double('queue', url: 'url') }
@@ -26,7 +26,7 @@ describe Eventboss::UnitOfWork do
       expect(client)
         .to receive(:delete_message).with(queue_url: 'url', receipt_handle: 'handle')
 
-      subject.run(client)
+      subject.run
     end
   end
 
@@ -52,7 +52,7 @@ describe Eventboss::UnitOfWork do
         visibility_timeout: 100
       )
 
-      subject.run(client)
+      subject.run
     end
   end
 
@@ -71,7 +71,7 @@ describe Eventboss::UnitOfWork do
     it 'does not cleanup message' do
       expect(client).not_to receive(:delete_message)
 
-      subject.run(client)
+      subject.run
     end
   end
 
@@ -98,7 +98,7 @@ describe Eventboss::UnitOfWork do
         visibility_timeout: 100
       )
 
-      subject.run(client)
+      subject.run
     end
   end
 
@@ -119,7 +119,7 @@ describe Eventboss::UnitOfWork do
     it 'does not run the job' do
       expect(client).not_to receive(:delete_message)
 
-      subject.run(client)
+      subject.run
     end
   end
 end
