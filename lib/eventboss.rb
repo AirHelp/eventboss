@@ -56,7 +56,7 @@ module Eventboss
     end
 
     def env
-      @env ||= ENV['EVENTBUS_ENV'] || ENV['RAILS_ENV'] || ENV['RACK_ENV']
+      @env ||= ENV['EVENTBOSS_ENV'] || ENV['EVENTBUS_ENV'] || ENV['RAILS_ENV'] || ENV['RACK_ENV']
     end
 
     def configure

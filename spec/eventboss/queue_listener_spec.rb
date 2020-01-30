@@ -7,7 +7,7 @@ describe Eventboss::QueueListener do
       config.eventboss_app_name = 'app1'
       config.listeners = {}
     end
-    ENV['EVENTBUS_ENV'] = 'staging'
+    ENV['EVENTBOSS_ENV'] = 'staging'
   end
 
   before do

@@ -18,11 +18,11 @@ RSpec.describe Eventboss::Configuration do
     end
 
     context 'when in ENV' do
-      after { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION'] = nil }
+      after { ENV['EVENTBOSS_RAISE_ON_MISSING_CONFIGURATION'] = nil }
 
       context 'when false' do
         %w(false False FALSE not_know).each do |falsey_value|
-          before { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION'] = falsey_value }
+          before { ENV['EVENTBOSS_RAISE_ON_MISSING_CONFIGURATION'] = falsey_value }
 
           it "returns false for #{falsey_value}" do
             expect(subject.raise_on_missing_configuration).to eq(false)
@@ -32,7 +32,7 @@ RSpec.describe Eventboss::Configuration do
 
       context 'when true' do
         %w(true TRUE True).each do |truthy_value|
-          before { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION'] = truthy_value }
+          before { ENV['EVENTBOSS_RAISE_ON_MISSING_CONFIGURATION'] = truthy_value }
 
           it "returns true for #{truthy_value}" do
             expect(subject.raise_on_missing_configuration).to eq(true)
@@ -51,7 +51,7 @@ RSpec.describe Eventboss::Configuration do
     end
 
     context 'when in ENV' do
-      before { ENV['EVENTBUS_CONCURRENCY'] = '10' }
+      before { ENV['EVENTBOSS_CONCURRENCY'] = '10' }
 
       it 'is taken from ENV' do
         expect(subject).to eq(10)
