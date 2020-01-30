@@ -1,6 +1,7 @@
 # Eventboss
 
 [![Gem Version](https://badge.fury.io/rb/eventboss.svg)](https://badge.fury.io/rb/eventboss)
+[![Build Status](https://travis-ci.org/AirHelp/eventboss.svg?branch=master)][travis]
 
 AWS based Pub/Sub implementation in Ruby.
 
