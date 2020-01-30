@@ -93,11 +93,11 @@ end
 Using ENVs:
 
 ```
-EVENTBUS_ACCOUNT_ID=12345676
-EVENTBUS_APP_NAME=application_name
-EVENTBUS_ENV=env_name # production/staging/test
-EVENTBUS_REGION=aws_region # i.e. eu-west-1
-EVENTBUS_CONCURRENCY=10 # default is 25
+EVENTBOSS_ACCOUNT_ID=12345676
+EVENTBOSS_APP_NAME=application_name
+EVENTBOSS_ENV=env_name # production/staging/test
+EVENTBOSS_REGION=aws_region # i.e. eu-west-1
+EVENTBOSS_CONCURRENCY=10 # default is 25
 
 AWS_SNS_ENDPOINT=http://localhost:4575 # when using with localstack
 AWS_SQS_ENDPOINT=http://localhost:4576 # when using with localstack

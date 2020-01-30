@@ -25,7 +25,7 @@ module Eventboss
 
 
     def raise_on_missing_configuration
-      defined_or_default('raise_on_missing_configuration') { ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION']&.downcase == 'true' }
+      defined_or_default('raise_on_missing_configuration') { (ENV['EVENTBOSS_RAISE_ON_MISSING_CONFIGURATION'] || ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION'])&.downcase == 'true' }
     end
 
     def error_handlers
@@ -37,7 +37,10 @@ module Eventboss
     end
 
     def concurrency
-      defined_or_default('concurrency') { ENV['EVENTBUS_CONCURRENCY'] ? ENV['EVENTBUS_CONCURRENCY'].to_i : 25 }
+      defined_or_default('concurrency') do
+        concurrency = ENV['EVENTBOSS_CONCURRENCY'] || ENV['EVENTBUS_CONCURRENCY']
+        concurrency ? concurrency.to_i : 25
+      end
     end
 
     def log_level
@@ -72,15 +75,15 @@ module Eventboss
     end
 
     def eventboss_region
-      defined_or_default('eventboss_region') { ENV['EVENTBUS_REGION'] }
+      defined_or_default('eventboss_region') { ENV['EVENTBOSS_REGION'] || ENV['EVENTBUS_REGION'] }
     end
 
     def eventboss_app_name
-      defined_or_default('eventboss_app_name') { ENV['EVENTBUS_APP_NAME'] }
+      defined_or_default('eventboss_app_name') { ENV['EVENTBOSS_APP_NAME'] || ENV['EVENTBUS_APP_NAME'] }
     end
 
     def eventboss_account_id
-      defined_or_default('eventboss_account_id') { ENV['EVENTBUS_ACCOUNT_ID'] }
+      defined_or_default('eventboss_account_id') { ENV['EVENTBOSS_ACCOUNT_ID'] || ENV['EVENTBUS_ACCOUNT_ID'] }
     end
 
     def aws_access_key_id
@@ -100,7 +103,7 @@ module Eventboss
     end
 
     def sns_sqs_name_infix
-      defined_or_default('sns_sqs_name_infix') { ENV['EVENTBUS_SQS_SNS_NAME_INFIX'] || 'eventboss' }
+      defined_or_default('sns_sqs_name_infix') { ENV['EVENTBOSS_SQS_SNS_NAME_INFIX'] || ENV['EVENTBUS_SQS_SNS_NAME_INFIX'] || 'eventboss' }
     end
 
     def listeners
