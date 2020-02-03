@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe Eventboss::Configuration do
@@ -56,6 +58,22 @@ RSpec.describe Eventboss::Configuration do
       it 'is taken from ENV' do
         expect(subject).to eq(10)
       end
+    end
+  end
+
+  describe '#development_mode?' do
+    subject { configuration.development_mode? }
+
+    context 'by default' do
+      before { ENV['EVENTBUS_DEVELOPMENT_MODE'] = 'what do you do in the bath' }
+
+      it { is_expected.to be(false) }
+    end
+
+    context 'when set via ENV' do
+      before { ENV['EVENTBUS_DEVELOPMENT_MODE'] = 'true' }
+
+      it { is_expected.to be(true) }
     end
   end
 end

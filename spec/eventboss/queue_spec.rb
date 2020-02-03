@@ -1,16 +1,18 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
 describe Eventboss::Queue do
   let(:name) { 'sample_queue_name' }
-  let(:client_mock) { double('client_mock', get_queue_url: double(queue_url: queue_url))}
+  let(:client_mock) { double('client_mock', get_queue_url: double(queue_url: queue_url)) }
   let(:queue_url) { double }
-  let(:configuration) do
-    Eventboss::Configuration.new.tap do |config|
-      config.sqs_client = client_mock
-    end
+
+  subject(:queue) { described_class.new(name) }
+
+  before do
+    allow(Eventboss.configuration).to receive(:sqs_client).and_return(client_mock)
   end
 
-  subject(:queue) { described_class.new(name, configuration) }
 
   context '#name' do
     it 'returns name set in initializer' do
@@ -40,36 +42,98 @@ describe Eventboss::Queue do
   end
 
   describe '.build_name' do
-    let(:source) { 'src' }
+    let(:source_app) { 'src' }
     let(:destination) { 'dst' }
-    let(:event) { 'process_resource' }
+    let(:event_name) { 'process_resource' }
     let(:env) { 'test' }
-    let(:generic) { false }
 
     subject do
       described_class.build_name(
-        source: source,
+        source_app: source_app,
         destination: destination,
-        event: event,
-        env: env,
-        generic: generic
+        event_name: event_name,
+        env: env
       )
     end
 
     it 'returns queue name' do
-      url = "#{destination}-eventboss-#{source}-#{event}-#{env}"
+      url = "#{destination}-eventboss-#{source_app}-#{event_name}-#{env}"
 
       expect(subject).to eql(url)
     end
 
-    context 'when generic is true' do
-      let(:generic) { true }
+    context 'when no source_app set' do
+      let(:source_app) { nil }
 
       it 'returns queue name' do
-        url = "#{destination}-eventboss-#{event}-#{env}"
+        url = "#{destination}-eventboss-#{event_name}-#{env}"
 
         expect(subject).to eql(url)
       end
     end
+  end
+
+  describe '.build' do
+    subject { described_class.build(queue_params) }
+
+    let(:queue_params) do
+      {
+        source_app: 'chyba',
+        destination: 'ze',
+        event_name: 'o to',
+        env: 'pytasz'
+      }
+    end
+
+    before do
+      allow(Eventboss::Queue).to receive(:build_name).with(queue_params).and_return('qname')
+    end
+
+    it 'creates a queue' do
+      expect(subject).to be_instance_of(Eventboss::Queue)
+    end
+
+    it 'uses .build_name' do
+      subject
+      expect(Eventboss::Queue).to have_received(:build_name).with(queue_params)
+    end
+  end
+
+  describe '#arn' do
+    subject { described_class.new('wieloryb') }
+
+    let(:queue_params) do
+      {
+        source_app: 'wieloryb',
+        destination: 'gdansk',
+        event_name: 'EV',
+        env: 'we did it'
+      }
+    end
+
+    before do
+      allow(Eventboss.configuration).to receive(:eventboss_region).and_return('R')
+      allow(Eventboss.configuration).to receive(:eventboss_account_id).and_return('idkfa')
+    end
+
+    it 'includes name' do
+      expect(subject.arn).to include('wieloryb')
+    end
+
+    it 'uses eventboss region' do
+      subject.arn
+      expect(Eventboss.configuration).to have_received(:eventboss_region)
+    end
+
+    it 'uses eventboss account id' do
+      subject.arn
+      expect(Eventboss.configuration).to have_received(:eventboss_account_id)
+    end
+  end
+
+  describe '#to_s' do
+    subject { described_class.new('double-negative') }
+
+    it { expect(subject.to_s).to eql('<Eventboss::Queue: double-negative>') }
   end
 end

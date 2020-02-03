@@ -1,8 +1,8 @@
 require "spec_helper"
 
 describe Eventboss::Fetcher do
-  let(:queue) { Eventboss::Queue.new('test', configuration) }
-  let(:client_mock) { double('client_mock', get_queue_url: double(queue_url: 'url'))}
+  let(:queue) { instance_double(Eventboss::Queue, url: 'url') }
+  let(:client_mock) { double('client_mock', get_queue_url: double(queue_url: 'url')) }
   let(:configuration) do
     Eventboss::Configuration.new.tap do |config|
       config.sqs_client = client_mock
@@ -20,7 +20,7 @@ describe Eventboss::Fetcher do
   context '#fetch' do
     context 'when limit higher that 10' do
       it 'calls receive client with max no msg eq 10' do
-        expect(client_mock).to receive(:receive_message).with(queue_url: queue.url, max_number_of_messages: 10).and_return(double(messages: [1, 2, 3]))
+        expect(client_mock).to receive(:receive_message).with(queue_url: 'url', max_number_of_messages: 10).and_return(double(messages: [1, 2, 3]))
         expect(subject.fetch(queue, 20)).to eq([1, 2, 3])
       end
     end

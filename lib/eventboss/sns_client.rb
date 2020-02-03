@@ -1,5 +1,8 @@
+# frozen_string_literal: true
+
 module Eventboss
-  class NotConfigured < StandardError; end
+  class NotConfigured < StandardError;
+  end
 
   class SnsClient
     def initialize(configuration)
@@ -10,9 +13,30 @@ module Eventboss
       backend.publish(payload)
     end
 
+    def create_topic(name:)
+      backend.create_topic(name: name)
+    end
+
+    def create_subscription(topic_arn:, queue_arn:)
+      subscription = backend.subscribe(
+        topic_arn: topic_arn,
+        endpoint: queue_arn,
+        protocol: 'sqs'
+      )
+      set_raw_message_delivery(subscription)
+    end
+
     private
 
     attr_reader :configuration
+
+    def set_raw_message_delivery(subscription)
+      backend.set_subscription_attributes(
+        subscription_arn: subscription.subscription_arn,
+        attribute_name: 'RawMessageDelivery',
+        attribute_value: 'true'
+      )
+    end
 
     def backend
       if configured?
@@ -26,11 +50,10 @@ module Eventboss
         if configuration.aws_sns_endpoint
           options[:endpoint] = configuration.aws_sns_endpoint
         end
-        Aws::SNS::Client.new(
-          options
-        )
+
+        Aws::SNS::Client.new(options)
       elsif configuration.raise_on_missing_configuration
-        raise NotConfigured, 'Eventboss is not configured'
+        raise NotConfigured, 'Eventboss is not configured.'
       else
         Mock.new
       end

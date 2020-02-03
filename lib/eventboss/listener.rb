@@ -17,15 +17,12 @@ module Eventboss
     end
 
     module ClassMethods
-      def eventboss_options(opts)
-        source_app = opts[:source_app] ? "#{opts[:source_app]}-" : ""
-        event_name = opts[:event_name]
-        destination_app = opts[:destination_app]
+      attr_reader :options
 
-        ACTIVE_LISTENERS["#{source_app}#{event_name}"] = {
-          listener: self,
-          destination_app: destination_app
-        }
+      def eventboss_options(options)
+        @options = options.compact
+
+        ACTIVE_LISTENERS[@options] = self
       end
     end
   end

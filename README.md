@@ -17,10 +17,10 @@ AWS based Pub/Sub implementation in Ruby.
 * [x] support multiple environments in the same AWS account
 * [x] pluggable error handlers (airbrake, newrelic)
 * [x] utility tasks (deadletter reload)
-* [x] localstack compatible
+* [x] [localstack](https://github.com/localstack/localstack) compatible
 * [x] rails support (preloads rails environment)
+* [x] development mode (creates missing SNS/SQS on the fly)
 * [ ] terraform pub/sub scripts
-* [ ] development mode (creates missing SNS/SQS on the fly)
 * [ ] alternative infrastructure (redis?, kafka?)
 * [ ] message compression
 * [ ] alternative serialization (protobuf)
@@ -103,6 +103,10 @@ EVENTBOSS_CONCURRENCY=10 # default is 25
 AWS_SNS_ENDPOINT=http://localhost:4575 # when using with localstack
 AWS_SQS_ENDPOINT=http://localhost:4576 # when using with localstack
 ```
+Use fixed account ID for localstack setup:
+```
+EVENTBUS_ACCOUNT_ID=000000000000
+```
 
 Be aware that `eventbus:deadletter:reload` rake task won't load your configuration if you are not using ENVs
  in non Rails app, although to make it work you can extend your `Rakefile` with:
@@ -129,12 +133,12 @@ listeners:
   exclude:
     - OtherListener # When include option is not set it will run all listeners except listed here (OtherListener). When include is set it will run only included (but not excluded) listeners.
 ```
-Yml config is optional and by default is loaded from `'./config/eventboss.yml'`.
+YAML config is optional and by default is loaded from `'./config/eventboss.yml'`.
 You can also pass config path as an argument:
-```bash
+```sh
 eventboss -C my/custom/path/to/config.yml
 ```
-Yml config content is merged to configuration last, which means it overwrites ENVs and `.configure`.
+YAML config content is merged to configuration last, which means it overwrites ENVs and `.configure`.
 
 ### Logging and error handling
 To have more verbose logging, set `log_level` in configuration (default is `info`).
@@ -147,9 +151,33 @@ Eventboss.configure do |config|
 end
 ```
 
+## Development mode 
+
+In the _development mode_ you don't need to create the infrastructure required by the application - Eventboss will take care of this.
+
+It works on AWS and [localstack](https://github.com/localstack/localstack).
+
+Following resources are created: 
+* SNS topics - created when application starts and when message is published
+* SQS queues (with SendMessage policy) - created when application starts
+* subscriptions for topics and queues - created when application starts
+
+Just enable it via environment variable...
+```
+EVENTBUS_DEVELOPMENT_MODE=true
+```
+use fixed account ID for localstack setup...
+```
+EVENTBUS_ACCOUNT_ID=000000000000 # or set it via YAML
+```
+...and you're good to go:
+```shell script
+bundle exec eventboss
+```
+
 ## Topics & Queues naming convention
 
-The SNSes should be name in the following pattern:
+The SNSes should be named in the following pattern:
 ```
 eventboss-{src_app_name}-{event_name}-{environment}
 ```
@@ -159,7 +187,7 @@ i.e.
 eventboss-srcapp-transaction_change-staging
 ```
 
-The corresponding SQSes should be name like:
+The corresponding SQSes should be named like:
 ```
 {dest_app_name}-eventboss-{src_app_name}-{event_name}-{environment}
 {dest_app_name}-eventboss-{src_app_name}-{event_name}-{environment}-deadletter
@@ -178,3 +206,4 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/AirHel
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+
