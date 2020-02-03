@@ -1,16 +1,17 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
 describe Eventboss::QueueListener do
+
   before do
     Eventboss.configure do |config|
       config.sqs_client = double('client')
       config.eventboss_app_name = 'app1'
       config.listeners = {}
     end
-    ENV['EVENTBOSS_ENV'] = 'staging'
-  end
+    allow(Eventboss).to receive(:env).and_return('EnV')
 
-  before do
     stub_const 'Eventboss::Listener::ACTIVE_LISTENERS', {}
     stub_const 'Listener1', Class.new
     Listener1.class_eval do
@@ -34,7 +35,7 @@ describe Eventboss::QueueListener do
   describe '.select' do
     context 'with include arg' do
       it 'returns only included listeners' do
-        queue_listeners = Eventboss::QueueListener.select(include: ['Listener1'], exclude: nil)
+        queue_listeners = Eventboss::QueueListener.select(include: ['Listener1'])
         expect(queue_listeners[Eventboss::Queue.new("app1-eventboss-destapp1-transaction_created-#{Eventboss.env}")]).to eq(Listener1)
         expect(queue_listeners.count).to eq 1
       end
@@ -42,7 +43,7 @@ describe Eventboss::QueueListener do
 
     context 'with exclude arg' do
       it 'returns all not excluded listeners' do
-        queue_listeners = Eventboss::QueueListener.select(include: nil, exclude: ['Listener3'])
+        queue_listeners = Eventboss::QueueListener.select(exclude: ['Listener3'])
         expect(queue_listeners[Eventboss::Queue.new("app1-eventboss-destapp1-transaction_created-#{Eventboss.env}")]).to eq(Listener1)
         expect(queue_listeners[Eventboss::Queue.new("app1-eventboss-destapp2-file_uploaded-#{Eventboss.env}")]).to eq(Listener2)
         expect(queue_listeners.count).to eq 2
@@ -57,6 +58,12 @@ describe Eventboss::QueueListener do
         )
         expect(queue_listeners[Eventboss::Queue.new("dest_app-eventboss-destapp3-file_destroyed-#{Eventboss.env}")]).to eq(Listener3)
         expect(queue_listeners.count).to eq 1
+      end
+    end
+
+    context 'without in-/exclude' do
+      it 'returns all listeners' do
+        expect(Eventboss::QueueListener.select.count).to eq 3
       end
     end
   end

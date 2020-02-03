@@ -17,6 +17,12 @@ describe Eventboss::Listener do
     end
   end
 
+  context '.options' do
+    it 'allows to access eventboss_options' do
+      expect(Listener1.options).to eq(source_app: "app1", event_name: "transaction_created")
+    end
+  end
+
   context '#jid' do
     it 'creates unique jid for the job' do
       expect(Listener1.new.jid).not_to be_nil
@@ -27,8 +33,8 @@ describe Eventboss::Listener do
   context '#ACTIVE_LISTENERS' do
     it 'adds the class to active listeners hash' do
       expect(Eventboss::Listener::ACTIVE_LISTENERS).to eq(
-        "transaction_created" => { listener: GenericListener1, destination_app: 'dest_app' },
-        "app1-transaction_created" => { listener: Listener1, destination_app: nil }
+        { event_name: "transaction_created", destination_app: 'dest_app' } => GenericListener1,
+        { source_app: "app1", event_name: "transaction_created" } => Listener1
       )
     end
   end

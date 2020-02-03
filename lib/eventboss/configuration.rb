@@ -1,27 +1,29 @@
+# frozen_string_literal: true
+
 module Eventboss
   class Configuration
     OPTS_ALLOWED_IN_CONFIG_FILE = %i[
       concurrency
       sns_sqs_name_infix
       listeners
-    ]
+    ].freeze
 
     attr_writer :raise_on_missing_configuration,
-                :error_handlers,
-                :concurrency,
-                :log_level,
-                :logger,
-                :sns_client,
-                :sqs_client,
-                :eventboss_region,
-                :eventboss_app_name,
-                :eventboss_account_id,
-                :aws_access_key_id,
-                :aws_secret_access_key,
-                :aws_sns_endpoint,
-                :aws_sqs_endpoint,
-                :sns_sqs_name_infix,
-                :listeners
+      :error_handlers,
+      :concurrency,
+      :log_level,
+      :logger,
+      :sns_client,
+      :sqs_client,
+      :eventboss_region,
+      :eventboss_app_name,
+      :eventboss_account_id,
+      :aws_access_key_id,
+      :aws_secret_access_key,
+      :aws_sns_endpoint,
+      :aws_sqs_endpoint,
+      :sns_sqs_name_infix,
+      :listeners
 
 
     def raise_on_missing_configuration
@@ -108,6 +110,12 @@ module Eventboss
 
     def listeners
       defined_or_default('listeners') { {} }
+    end
+
+    def development_mode?
+      defined_or_default('development_mode') do
+        (ENV['EVENTBOSS_DEVELOPMENT_MODE']&.downcase || ENV['EVENTBUS_DEVELOPMENT_MODE'])&.downcase == 'true'
+      end
     end
 
     private

@@ -18,8 +18,10 @@ require 'eventboss/worker'
 require 'eventboss/fetcher'
 require 'eventboss/publisher'
 require 'eventboss/sender'
+require 'eventboss/topic'
 require 'eventboss/runner'
 require 'eventboss/extensions'
+require 'eventboss/development_mode'
 
 # For Rails use railtie, for plain Ruby apps use custom scripts loader
 if defined?(Rails)
@@ -33,21 +35,34 @@ module Eventboss
 
   class << self
     def publisher(event_name, opts = {})
-      Publisher.new(event_name, configuration.sns_client, configuration, opts)
+      sns_client = configuration.sns_client
+
+      if configuration.development_mode?
+        source_app = configuration.eventboss_app_name unless opts[:generic]
+        topic_name = Topic.build_name(event_name: event_name, source_app: source_app)
+        sns_client.create_topic(name: topic_name)
+      end
+
+      Publisher.new(event_name, sns_client, configuration, opts)
     end
 
-    def sender(event_name, destination_app, options = {})
-      queue_name = Queue.build_name(
-        destination: destination_app,
-        source: configuration.eventboss_app_name,
-        event: event_name,
-        env: env,
-        generic: options[:generic]
+    def sender(event_name, destination, options = {})
+      source_app = configuration.eventboss_app_name unless options[:generic]
+      queue = Queue.build(
+        destination: destination,
+        source_app: source_app,
+        event_name: event_name,
+        env: env
       )
+      sqs_client = configuration.sqs_client
+
+      if configuration.development_mode?
+        sqs_client.create_queue(queue_name: queue.name)
+      end
 
       Sender.new(
-        client: configuration.sqs_client,
-        queue: Queue.new(queue_name)
+        client: sqs_client,
+        queue: queue
       )
     end
 

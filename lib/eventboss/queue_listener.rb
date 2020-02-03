@@ -1,7 +1,7 @@
 module Eventboss
   class QueueListener
     class << self
-      def select(include:, exclude:)
+      def select(include: nil, exclude: nil)
         listeners = list.values.map(&:name)
 
         listeners &= include if include
@@ -13,19 +13,15 @@ module Eventboss
       private
 
       def list
-        Hash[Eventboss::Listener::ACTIVE_LISTENERS.map do |src_app_event, opts|
-          [
-            Eventboss::Queue.new(
-              [
-                opts[:destination_app] || Eventboss.configuration.eventboss_app_name,
-                Eventboss.configuration.sns_sqs_name_infix,
-                src_app_event,
-                Eventboss.env
-              ].join('-')
-            ),
-            opts[:listener]
-          ]
-        end]
+        Eventboss::Listener::ACTIVE_LISTENERS.each_with_object({}) do |(eventboss_options, listener), queue_listeners|
+          queue = Eventboss::Queue.build(
+            destination: eventboss_options[:destination_app] || Eventboss.configuration.eventboss_app_name,
+            source_app: eventboss_options[:source_app],
+            event_name: eventboss_options[:event_name],
+            env: Eventboss.env
+          )
+          queue_listeners[queue] = listener
+        end
       end
     end
   end
