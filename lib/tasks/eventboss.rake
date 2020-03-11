@@ -33,7 +33,6 @@ namespace :eventboss do
         break if messages.count.zero?
 
         messages.each do |message|
-          puts "[#{task.name}] Publishing message: #{message.body}"
           client.send_message(queue_url: send_queue.url, message_body: message.body)
           fetcher.delete(queue, message)
 
@@ -71,7 +70,6 @@ namespace :eventboss do
         break if messages.count.zero?
 
         messages.each do |message|
-          puts "[#{task.name}] Deleting message: #{message.body}"
           fetcher.delete(queue, message)
 
           total += 1
