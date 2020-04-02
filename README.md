@@ -164,7 +164,7 @@ Following resources are created:
 
 Just enable it via environment variable...
 ```
-EVENTBUS_DEVELOPMENT_MODE=true
+EVENTBOSS_DEVELOPMENT_MODE=true
 ```
 use fixed account ID for localstack setup...
 ```
