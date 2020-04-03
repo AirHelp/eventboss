@@ -1,0 +1,11 @@
+# frozen_string_literal: true
+
+class <%= event_name.camelize %>Listener
+  include Eventboss::Listener
+
+  eventboss_options event_name: '<%= event_name %>'<%= source_app ? ", source_app: '#{ source_app }'" : "" %>
+
+  def receive(payload)
+    Rails.logger.tagged(jid) { Rails.logger.info("payload: #{ payload }") }
+  end
+end
