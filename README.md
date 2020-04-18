@@ -151,13 +151,45 @@ Eventboss.configure do |config|
 end
 ```
 
-## Development mode 
+### Middlewares
+
+Server middlewares intercept the execution of your `Listeners`. You can use to extract and run common functions on every message received.
+
+Define a middleware in the following way:
+
+```ruby
+class LogMiddleware < Base
+  def call(_work)
+    yield
+    logger.debug 'finished with success'
+  rescue StandardError => _error
+    logger.error 'finished with error'
+    raise
+  end
+
+  private
+
+  def logger
+    @logger ||= @options.fetch(:logger)
+  end
+end
+```
+
+And configure your logger as such:
+
+```ruby
+Eventboss.configure do |config|
+  config.server_middleware.add LogMiddleware, logger: Logger.new
+end
+```
+
+## Development mode
 
 In the _development mode_ you don't need to create the infrastructure required by the application - Eventboss will take care of this.
 
 It works on AWS and [localstack](https://github.com/localstack/localstack).
 
-Following resources are created: 
+Following resources are created:
 * SNS topics - created when application starts and when message is published
 * SQS queues (with SendMessage policy) - created when application starts
 * subscriptions for topics and queues - created when application starts
@@ -206,4 +238,3 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/AirHel
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
