@@ -158,7 +158,7 @@ Server middlewares intercept the execution of your `Listeners`. You can use to e
 Define a middleware in the following way:
 
 ```ruby
-class LogMiddleware < Base
+class LogMiddleware < Eventboss::Middleware::Base
   def call(_work)
     yield
     logger.debug 'finished with success'
