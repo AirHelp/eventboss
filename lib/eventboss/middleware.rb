@@ -23,6 +23,10 @@ module Eventboss
         end
         invoke_lambda.call
       end
+
+      def clear
+        @entries.clear
+      end
     end
 
     class Base

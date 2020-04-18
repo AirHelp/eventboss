@@ -33,7 +33,7 @@ module Eventboss
     end
 
     def run_work(work)
-      server_middleware.invoke(*args_for(work)) do
+      server_middleware.invoke(work) do
         work.run
       end
     end
@@ -56,10 +56,6 @@ module Eventboss
     # stops the loop, by enqueuing falsey value
     def stop_token
       @bus << nil
-    end
-
-    def args_for(work)
-      [work.queue, work.listener, work.message]
     end
 
     def server_middleware
