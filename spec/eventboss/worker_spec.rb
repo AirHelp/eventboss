@@ -65,4 +65,24 @@ describe Eventboss::Worker do
       end
     end
   end
+
+  context 'middlewares' do
+    class WorkMiddleware < Eventboss::Middleware::Base
+      def call(work); end
+    end
+
+    let(:middlewares) { Eventboss.configuration.server_middleware }
+
+    before do
+      bus << work
+      middlewares.add(WorkMiddleware)
+    end
+
+    after { middlewares.clear }
+
+    it 'calls middlewares in order' do
+      expect_any_instance_of(WorkMiddleware).to receive(:call)
+      subject.run
+    end
+  end
 end
