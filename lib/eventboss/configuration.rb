@@ -34,6 +34,7 @@ module Eventboss
       defined_or_default('error_handlers') do
         [ErrorHandlers::Logger.new].tap do |handlers|
           handlers << ErrorHandlers::DbConnectionDropHandler.new if defined?(::ActiveRecord::StatementInvalid)
+          handlers << ErrorHandlers::DbConnectionNotEstablishedHandler.new if defined?(::ActiveRecord::ConnectionNotEstablished)
         end
       end
     end
