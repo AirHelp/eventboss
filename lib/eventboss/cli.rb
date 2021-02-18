@@ -28,7 +28,7 @@ module Eventboss
     def run
       boot_system
 
-      Eventboss.logger.info('Starting eventboss...')
+      Eventboss.logger.info("Starting eventboss v#{Eventboss::VERSION} ...")
 
       Eventboss.launch
     end
