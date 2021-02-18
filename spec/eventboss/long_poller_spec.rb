@@ -9,7 +9,14 @@ describe Eventboss::LongPoller do
   let(:bus) { [] }
   let(:client) { double('client') }
   let(:queue) { double('queue', name: 'name', url: 'url') }
-  let(:listener) { double('listener') }
+  let(:listener) do
+    Class.new do
+      include Eventboss::Listener
+
+      def receive(payload)
+      end
+    end
+  end
   let(:message) { double('message', message_id: 1) }
 
   before do

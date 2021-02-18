@@ -122,4 +122,41 @@ describe Eventboss::UnitOfWork do
       subject.run
     end
   end
+
+  context 'with listener with named params' do
+    let(:listener_class) do
+      Class.new do
+        include Eventboss::Listener
+
+        def receive(a:, b:, c: nil)
+        end
+      end
+    end
+
+    context 'when correct payload' do
+      let(:message) do
+        double('message', message_id: 'id', body: '{ "a": 1, "b": 2, "d": 3 }', receipt_handle: 'handle')
+      end
+
+      it 'deletes the job from the queue' do
+        expect(client)
+          .to receive(:delete_message).with(queue_url: 'url', receipt_handle: 'handle')
+
+        subject.run
+      end
+    end
+
+    context 'when incorrect payload' do
+      let(:message) do
+        double('message', message_id: 'id', body: '{ "a": 1, "d": 3 }', receipt_handle: 'handle')
+      end
+
+      it 'does not delete the job from the queue' do
+        expect(client)
+          .not_to receive(:delete_message).with(queue_url: 'url', receipt_handle: 'handle')
+
+        subject.run
+      end
+    end
+  end
 end

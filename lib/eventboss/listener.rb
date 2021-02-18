@@ -18,6 +18,7 @@ module Eventboss
 
     module ClassMethods
       attr_reader :options
+      attr_accessor :required_params, :optional_params
 
       def eventboss_options(options)
         @options = options.compact
