@@ -13,8 +13,9 @@ module Eventboss
       @message = message
       @logger = logger
 
-      if @listener.method_defined?(:receive)
-        receive_method_params = @listener.new.method(:receive).parameters
+      listener_instance = @listener.new
+      if listener_instance.respond_to?(:receive)
+        receive_method_params = listener_instance.method(:receive).parameters
         if [:key, :keyreq].include?(receive_method_params[0][0])
           @listener.required_params = receive_method_params.filter { |p| p[0] == :keyreq }.map { |p| p[1] }
           @listener.optional_params = receive_method_params.filter { |p| p[0] == :key }.map { |p| p[1] }
