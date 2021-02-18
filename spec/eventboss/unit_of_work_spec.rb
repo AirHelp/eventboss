@@ -135,7 +135,7 @@ describe Eventboss::UnitOfWork do
 
     context 'when correct payload' do
       let(:message) do
-        double('message', message_id: 'id', body: '{ "a": 1, "b": 2, "d": 3 }', receipt_handle: 'handle')
+        double('message', message_id: 'id', body: '{ "a": "1", "b": "2", "d": "3" }', receipt_handle: 'handle')
       end
 
       it 'deletes the job from the queue' do

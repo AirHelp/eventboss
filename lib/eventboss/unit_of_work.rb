@@ -26,8 +26,11 @@ module Eventboss
       logger.debug(@message.message_id) { 'Started' }
       processor = @listener.new
       JSON.parse(@message.body).tap do |payload|
-        payload = validate_and_symbolize_keys(payload, @listener.required_params, @listener.optional_params) if @listener.required_params
-        processor.receive(payload)
+        if @listener.required_params
+          processor.receive(**validate_and_symbolize_keys(payload, @listener.required_params, @listener.optional_params))
+        else
+          processor.receive(payload)
+        end
       end
       logger.debug(@message.message_id) { 'Finished' }
     rescue StandardError => exception
