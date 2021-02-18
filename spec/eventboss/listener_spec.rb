@@ -15,6 +15,15 @@ describe Eventboss::Listener do
       include Eventboss::Listener
       eventboss_options event_name: 'transaction_created', destination_app: 'dest_app'
     end
+
+    stub_const 'StrongParamListener1', Class.new
+    StrongParamListener1.class_eval do
+      include Eventboss::Listener
+      eventboss_options event_name: 'strong_event', destination_app: 'dest_app'
+
+      def receive(a:, b:, c: nil)
+      end
+    end
   end
 
   context '.options' do
@@ -33,8 +42,9 @@ describe Eventboss::Listener do
   context '#ACTIVE_LISTENERS' do
     it 'adds the class to active listeners hash' do
       expect(Eventboss::Listener::ACTIVE_LISTENERS).to eq(
+        { event_name: "strong_event", destination_app: "dest_app" } => StrongParamListener1,
         { event_name: "transaction_created", destination_app: 'dest_app' } => GenericListener1,
-        { source_app: "app1", event_name: "transaction_created" } => Listener1
+        { source_app: "app1", event_name: "transaction_created" } => Listener1,
       )
     end
   end
