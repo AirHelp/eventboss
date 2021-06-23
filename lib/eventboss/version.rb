@@ -1,3 +1,3 @@
 module Eventboss
-  VERSION = "1.5.2-np"
+  VERSION = "1.5.3"
 end
