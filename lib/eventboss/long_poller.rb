@@ -53,6 +53,8 @@ module Eventboss
       @launcher.poller_stopped(self)
     rescue Eventboss::Shutdown
       @launcher.poller_stopped(self)
+    rescue Aws::SQS::Errors::NonExistentQueue
+      Eventboss.logger.error { "Queue  doesn't exist: " + id.sub("poller-", "") }
     rescue StandardError => exception
       handle_exception(exception, poller_id: id)
       # Give a chance for temporary AWS errors to be resolved
