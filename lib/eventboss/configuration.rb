@@ -25,14 +25,13 @@ module Eventboss
       :sns_sqs_name_infix,
       :listeners
 
-
     def raise_on_missing_configuration
       defined_or_default('raise_on_missing_configuration') { (ENV['EVENTBOSS_RAISE_ON_MISSING_CONFIGURATION'] || ENV['EVENTBUS_RAISE_ON_MISSING_CONFIGURATION'])&.downcase == 'true' }
     end
 
     def error_handlers
       defined_or_default('error_handlers') do
-        [ErrorHandlers::Logger.new].tap do |handlers|
+        [ErrorHandlers::Logger.new, ErrorHandlers::NonExistentQueueHandler.new].tap do |handlers|
           handlers << ErrorHandlers::DbConnectionDropHandler.new if defined?(::ActiveRecord::StatementInvalid)
           handlers << ErrorHandlers::DbConnectionNotEstablishedHandler.new if defined?(::ActiveRecord::ConnectionNotEstablished)
         end
