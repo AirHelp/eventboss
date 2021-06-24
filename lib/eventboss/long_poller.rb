@@ -53,6 +53,9 @@ module Eventboss
       @launcher.poller_stopped(self)
     rescue Eventboss::Shutdown
       @launcher.poller_stopped(self)
+    rescue Aws::SQS::Errors::NonExistentQueue
+      handle_exception(exception, poller_id: id)
+      @launcher.poller_stopped(self)
     rescue StandardError => exception
       handle_exception(exception, poller_id: id)
       # Give a chance for temporary AWS errors to be resolved
