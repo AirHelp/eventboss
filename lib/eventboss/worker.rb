@@ -7,7 +7,7 @@ module Eventboss
     attr_reader :id
 
     def initialize(launcher, id, bus, restart_on: [Exception])
-      @id = "worker-#{id}"
+      @id = id
       @launcher = launcher
       @bus = bus
       @thread = nil
