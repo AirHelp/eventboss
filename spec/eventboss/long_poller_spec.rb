@@ -35,5 +35,16 @@ describe Eventboss::LongPoller do
 
       subject.fetch_and_dispatch
     end
+
+    context 'when queue is closed' do
+      before do
+        allow(bus).to receive(:<<).and_raise(ClosedQueueError)
+      end
+
+      it 'skip enqueuing the message' do
+        subject.fetch_and_dispatch
+        expect(bus.size).to be 0
+      end
+    end
   end
 end
