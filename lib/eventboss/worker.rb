@@ -45,7 +45,6 @@ module Eventboss
     end
 
     def kill(wait = false)
-      stop_token
       return unless @thread
       @thread.raise Eventboss::Shutdown
       @thread.value if wait

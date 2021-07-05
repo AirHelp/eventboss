@@ -34,6 +34,7 @@ module Eventboss
       @bus.clear
       @pollers.each(&:terminate)
       @workers.each(&:terminate)
+      @bus.close
 
       wait_for_shutdown
       hard_shutdown
