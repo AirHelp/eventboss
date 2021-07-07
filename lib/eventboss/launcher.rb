@@ -34,6 +34,7 @@ module Eventboss
       @bus.clear
       @pollers.each(&:terminate)
       @workers.each(&:terminate)
+      @bus.close
 
       wait_for_shutdown
       hard_shutdown
@@ -70,7 +71,7 @@ module Eventboss
     end
 
     def new_worker(id)
-      Worker.new(self, id, @bus)
+      Worker.new(self, "worker-#{id}", @bus)
     end
 
     def new_poller(queue, listener)

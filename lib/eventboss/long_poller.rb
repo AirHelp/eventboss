@@ -45,6 +45,8 @@ module Eventboss
       fetch_messages.each do |message|
         logger.debug(id) { "enqueueing message #{message.message_id}" }
         @bus << UnitOfWork.new(@client, queue, listener, message)
+      rescue ClosedQueueError
+        logger.info(id) { "skip message #{message.message_id} enqueuing due to closed queue" }
       end
     end
 
