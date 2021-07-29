@@ -74,7 +74,7 @@ describe Eventboss::Queue do
   end
 
   describe '.build' do
-    subject { described_class.build(queue_params) }
+    subject { described_class.build(**queue_params) }
 
     let(:queue_params) do
       {
