@@ -1,0 +1,40 @@
+name: Verify
+# Source: https://github.com/actions/setup-ruby
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: ["2.6", "2.7", "3.0"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        # To automatically get bug fixes and new Ruby versions for ruby/setup-ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          # runs 'bundle install' and caches installed gems automatically
+          bundler-cache: true
+      - name: Run tests
+        run: bundle exec rspec
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.0"
+      - name: Install bundle audit
+        run: gem install bundle-audit
+      - name: Update Ruby Advisory Database
+        run: bundle-audit update
+      - name: Run audit
+        run: bundle audit
