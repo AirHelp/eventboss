@@ -55,7 +55,7 @@ module Eventboss
       @launcher.poller_stopped(self)
     rescue Eventboss::Shutdown
       @launcher.poller_stopped(self)
-    rescue Aws::SQS::Errors::NonExistentQueue
+    rescue Aws::SQS::Errors::NonExistentQueue => exception
       handle_exception(exception, poller_id: id)
       @launcher.poller_stopped(self)
     rescue StandardError => exception
