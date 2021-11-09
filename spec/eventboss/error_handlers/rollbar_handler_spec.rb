@@ -14,5 +14,12 @@ describe Eventboss::ErrorHandlers::Rollbar do
       expect(::Rollbar).to receive(:error).with(some_error, hash_including({ component: 'eventboss' }))
       subject.call(some_error)
     end
+
+    it 'includes use_exception_level_filters option' do
+      option = { use_exception_level_filters: true }
+
+      expect(::Rollbar).to receive(:error).with(some_error, hash_including(option))
+      subject.call(some_error)
+    end
   end
 end

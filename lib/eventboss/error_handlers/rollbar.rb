@@ -4,7 +4,13 @@ module Eventboss
       def call(exception, context = {})
         eventboss_context = { component: 'eventboss' }
         eventboss_context[:action] = context[:processor].class.to_s if context[:processor]
-        ::Rollbar.error(exception, eventboss_context.merge(context))
+
+        default_options = { use_exception_level_filters: true }
+
+        ::Rollbar.error(
+          exception,
+          context.merge(eventboss_context, default_options)
+        )
       end
     end
   end
