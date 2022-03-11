@@ -6,6 +6,9 @@ namespace :eventboss do
     task :reload, [:event_name, :source_app, :max_messages] do |task, args|
       source_app = args[:source_app]
       event_name = args[:event_name]
+      start_time = Time.now
+
+      Eventboss.logger.info "[#{task.name}] Start task, time: #{start_time}"
 
       # Zero means: fetch all messages
       max_messages = args[:max_messages].to_i
@@ -17,13 +20,11 @@ namespace :eventboss do
 
       queue_name = compose_queue_name(source_app, event_name)
 
-      puts "[#{task.name}] Reloading #{queue_name}-deadletter (max: #{ max_messages }, batch: #{ batch_size })"
+      Eventboss.logger.info "[#{task.name}] Reloading #{queue_name}-deadletter (max: #{ max_messages }, batch: #{ batch_size })"
       queue = Eventboss::Queue.new("#{queue_name}-deadletter")
       send_queue = Eventboss::Queue.new(queue_name)
 
-      puts "[#{task.name}] #{queue.url}"
-      puts "[#{task.name}] to"
-      puts "[#{task.name}] #{send_queue.url}"
+      Eventboss.logger.info "[#{task.name}] #{queue.url} to #{send_queue.url}"
 
       fetcher = Eventboss::Fetcher.new(Eventboss.configuration)
       client = fetcher.client
@@ -42,15 +43,23 @@ namespace :eventboss do
 
         break if max_messages > 0 && total >= max_messages
       end
+      Eventboss.logger.info <<~HEREDOC
+        [#{task.name}] Task done
+        total messages: #{total}
+        total time: #{Time.now - start_time}s
+      HEREDOC
     end
 
     desc 'Purge deadletter queue'
     task :purge, [:event_name, :source_app, :max_messages] do |task, args|
       source_app = args[:source_app]
       event_name = args[:event_name]
+      start_time = Time.now
 
       # Zero means: fetch all messages
       max_messages = args[:max_messages].to_i
+
+      Eventboss.logger.info "[#{task.name}] Start task, time: #{start_time}"
 
       # Ensure we don't fetch more than 10 messages from SQS
       batch_size = max_messages == 0 ? 10 : [10, max_messages].min
@@ -59,9 +68,9 @@ namespace :eventboss do
 
       queue_name = compose_queue_name(source_app, event_name)
 
-      puts "[#{task.name}] Purging #{queue_name}-deadletter (max: #{ max_messages }, batch: #{ batch_size })"
+      Eventboss.logger.info "[#{task.name}] Purging #{queue_name}-deadletter (max: #{ max_messages }, batch: #{ batch_size })"
       queue = Eventboss::Queue.new("#{queue_name}-deadletter")
-      puts "[#{task.name}] #{queue.url}"
+      Eventboss.logger.info "[#{task.name}] #{queue.url}"
 
       fetcher = Eventboss::Fetcher.new(Eventboss.configuration)
       total = 0
@@ -78,6 +87,12 @@ namespace :eventboss do
 
         break if max_messages > 0 && total >= max_messages
       end
+
+      Eventboss.logger.info <<~HEREDOC
+        [#{task.name}] Task done
+        total messages: #{total}
+        total time: #{Time.now - start_time}s
+      HEREDOC
     end
 
     def compose_queue_name(source_app, event_name)

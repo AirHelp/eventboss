@@ -100,8 +100,8 @@ EVENTBOSS_ENV=env_name # production/staging/test
 EVENTBOSS_REGION=aws_region # i.e. eu-west-1
 EVENTBOSS_CONCURRENCY=10 # default is 25
 
-AWS_SNS_ENDPOINT=http://localhost:4575 # when using with localstack
-AWS_SQS_ENDPOINT=http://localhost:4576 # when using with localstack
+AWS_SNS_ENDPOINT=http://localhost:4566 # when using with localstack
+AWS_SQS_ENDPOINT=http://localhost:4566 # when using with localstack
 ```
 Use fixed account ID for localstack setup:
 ```
