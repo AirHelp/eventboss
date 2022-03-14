@@ -17,6 +17,9 @@ module Eventboss
           logger.info('development-mode') { "Creating queue #{queue.name}..." }
           sqs_client.create_queue(queue_name: queue.name)
 
+          logger.info('development-mode') { "Creating deadletter queue #{queue.name}-deadletter..." }
+          sqs_client.create_queue(queue_name: "#{queue.name}-deadletter")
+
           logger.info('development-mode') { "Setting up queue #{queue.name} policy..." }
           policy = queue_policy(queue.arn, topic.topic_arn)
           sqs_client.set_queue_attributes(queue_url: queue.url, attributes: { Policy: policy.to_json })
