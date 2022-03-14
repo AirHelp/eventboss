@@ -8,7 +8,7 @@ namespace :eventboss do
       event_name = args[:event_name]
       start_time = Time.now
 
-      Eventboss.logger.info "[#{task.name}] Start task, time: #{start_time}"
+      Eventboss.logger.info "[#{task.name}] Start task"
 
       # Zero means: fetch all messages
       max_messages = args[:max_messages].to_i
@@ -59,7 +59,7 @@ namespace :eventboss do
       # Zero means: fetch all messages
       max_messages = args[:max_messages].to_i
 
-      Eventboss.logger.info "[#{task.name}] Start task, time: #{start_time}"
+      Eventboss.logger.info "[#{task.name}] Start task"
 
       # Ensure we don't fetch more than 10 messages from SQS
       batch_size = max_messages == 0 ? 10 : [10, max_messages].min
