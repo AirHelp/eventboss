@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, utils]
     strategy:
       matrix:
         ruby-version: ["2.6", "2.7", "3.0"]
@@ -25,7 +25,7 @@ jobs:
       - name: Run tests
         run: bundle exec rspec
   audit:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, utils]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Ruby
