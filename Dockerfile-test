@@ -1,0 +1,1 @@
+FROM 158094083467.dkr.ecr.eu-west-1.amazonaws.com/ruby:2.7.4-onbuild-dev
