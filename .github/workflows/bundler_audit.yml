@@ -1,0 +1,25 @@
+name: Run Bundler Audit
+
+on:
+  pull_request:
+
+jobs:
+  run-bundler_audit:
+    name: Run bundler audit
+    runs-on: [self-hosted, utils]
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: 158094083467
+
+      - name: Run tests
+        shell: bash
+        run: |
+          docker run --rm -v $(pwd):/usr/src/app 158094083467.dkr.ecr.eu-west-1.amazonaws.com/bundler-audit bundle audit --update
+          
