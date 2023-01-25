@@ -1,0 +1,27 @@
+version: '2'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile-test
+    env_file:
+      - .env.example
+    volumes:
+      - tmp:/usr/src/app/tmp
+      - log:/usr/src/app/log
+  pronto:
+    build:
+      context: .
+      dockerfile: Dockerfile-test
+    volumes:
+      - .:/usr/src/app
+    entrypoint: ""
+    command: bash -c "bundle exec pronto run -f github_status text -c origin/master"
+    environment:
+      GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
+      RACK_ENV: test
+      RAILS_ENV: test
+
+volumes:
+  log:
+  tmp:
