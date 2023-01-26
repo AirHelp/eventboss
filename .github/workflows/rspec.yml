@@ -11,44 +11,19 @@ env:
 jobs:
   run-tests:
     name: Run RSpec
-    runs-on: [self-hosted, utils]
-
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: ["3.0"]
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        # To automatically get bug fixes and new Ruby versions for ruby/setup-ruby
+        uses: ruby/setup-ruby@v1
         with:
-          registries: 158094083467
-
-      - name: Set up Docker Context for Buildx
-        id: buildx-context
-        shell: bash
-        run: |
-          docker context create builders
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-        with:
-          version: latest
-          endpoint: builders
-
-      - name: Build tests image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./Dockerfile-test
-          tags: ${{ env.APPLICATION_NAME }}:rspec-tests-${{ github.sha }}
-          push: false
-          load: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
+          ruby-version: ${{ matrix.ruby-version }}
+          # runs 'bundle install' and caches installed gems automatically
+          bundler-cache: true
       - name: Run tests
-        shell: bash
-        run: |
-          docker run --rm \
-            -e "RAILS_ENV=test" \
-            -t ${{ env.APPLICATION_NAME }}:rspec-tests-${{ github.sha }} "bundle exec rspec"
+        run: bundle exec rspec
             

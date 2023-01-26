@@ -6,20 +6,20 @@ on:
 jobs:
   run-bundler_audit:
     name: Run bundler audit
-    runs-on: [self-hosted, utils]
-
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: ["3.0"]
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          registries: 158094083467
-
-      - name: Run tests
-        shell: bash
-        run: |
-          docker run --rm -v $(pwd):/usr/src/app 158094083467.dkr.ecr.eu-west-1.amazonaws.com/bundler-audit bundle audit --update
+          ruby-version: ${{ matrix.ruby-version }}
+      - name: Install bundle audit
+        run: gem install bundle-audit
+      - name: Update Ruby Advisory Database
+        run: bundle-audit update
+      - name: Run audit
+        run: bundle audit
           
