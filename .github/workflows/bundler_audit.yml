@@ -22,4 +22,3 @@ jobs:
         run: bundle-audit update
       - name: Run audit
         run: bundle audit
-          
