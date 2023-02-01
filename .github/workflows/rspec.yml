@@ -1,0 +1,28 @@
+name: Run RSpec tests
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  pull_request:
+
+env:
+  APPLICATION_NAME: eventboss
+
+jobs:
+  run-tests:
+    name: Run RSpec
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: ["3.0"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        # To automatically get bug fixes and new Ruby versions for ruby/setup-ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          # runs 'bundle install' and caches installed gems automatically
+          bundler-cache: true
+      - name: Run tests
+        run: bundle exec rspec

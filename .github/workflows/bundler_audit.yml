@@ -1,0 +1,24 @@
+name: Run Bundler Audit
+
+on:
+  pull_request:
+
+jobs:
+  run-bundler_audit:
+    name: Run bundler audit
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: ["3.0"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+      - name: Install bundle audit
+        run: gem install bundle-audit
+      - name: Update Ruby Advisory Database
+        run: bundle-audit update
+      - name: Run audit
+        run: bundle audit
