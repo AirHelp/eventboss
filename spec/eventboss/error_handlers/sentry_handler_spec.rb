@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'debug'
 
 describe Eventboss::ErrorHandlers::Sentry do
   module Sentry
