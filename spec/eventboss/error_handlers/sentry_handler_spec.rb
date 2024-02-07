@@ -1,13 +1,7 @@
 require 'spec_helper'
 
 describe Eventboss::ErrorHandlers::Sentry do
-  module Sentry
-    def capture_exception(error); end
-    def with_scope(&obj)
-      obj.call
-    end
-    def set_tags(tags); end
-  end
+  module Sentry; end
 
   subject { described_class.new }
 
