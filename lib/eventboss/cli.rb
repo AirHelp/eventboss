@@ -36,7 +36,7 @@ module Eventboss
     private
 
     def boot_system
-      Dotenv.load
+      Dotenv.load if defined?(Dotenv)
 
       require 'rails'
       if ::Rails::VERSION::MAJOR < 4
