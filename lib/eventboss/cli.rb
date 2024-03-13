@@ -1,5 +1,9 @@
 require 'rubygems'
-require 'dotenv'
+begin
+  require 'dotenv'
+  Dotenv.load
+rescue LoadError
+end
 require 'optparse'
 require 'yaml'
 require 'erb'
@@ -36,8 +40,6 @@ module Eventboss
     private
 
     def boot_system
-      Dotenv.load if defined?(Dotenv)
-
       require 'rails'
       if ::Rails::VERSION::MAJOR < 4
         require File.expand_path('config/environment.rb')
