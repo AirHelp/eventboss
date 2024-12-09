@@ -29,7 +29,7 @@ module Eventboss
     end
 
     def stop
-      logger.info('launcher') { 'Gracefully shutdown' }
+      logger.info('launcher') { 'Starting shutdown' }
 
       @bus.clear
       @pollers.each(&:terminate)
@@ -85,6 +85,8 @@ module Eventboss
         sleep shutdown_delay
         logger.info('launcher') { "Waiting for #{@pollers.size} pollers, #{@workers.size} workers" }
       end
+
+      logger.info('launcher') { 'Gracefully shutdown' }
     end
 
     def shutdown_attempts
