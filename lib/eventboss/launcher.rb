@@ -86,7 +86,7 @@ module Eventboss
         logger.info('launcher') { "Waiting for #{@pollers.size} pollers, #{@workers.size} workers" }
       end
 
-      logger.info('launcher') { 'Gracefully shutdown' }
+      logger.info('launcher') { 'Gracefully shutdown' } if @pollers.empty? && @workers.empty?
     end
 
     def shutdown_attempts
