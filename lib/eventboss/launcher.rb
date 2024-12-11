@@ -29,7 +29,7 @@ module Eventboss
     end
 
     def stop
-      logger.info('launcher') { 'Gracefully shutdown' }
+      logger.info('launcher') { 'Starting shutdown' }
 
       @bus.clear
       @pollers.each(&:terminate)
@@ -41,7 +41,10 @@ module Eventboss
     end
 
     def hard_shutdown
-      return if @pollers.empty? && @workers.empty?
+      if @poolers.empty? && @workers.empty?
+        logger.info('launcher') { 'Gracefully shutdown' }
+        return
+      end
 
       logger.info('launcher') { "Killing remaining #{@pollers.size} pollers, #{@workers.size} workers" }
       @pollers.each(&:kill)
