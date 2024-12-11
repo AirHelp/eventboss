@@ -41,7 +41,10 @@ module Eventboss
     end
 
     def hard_shutdown
-      return if @pollers.empty? && @workers.empty?
+      if @poolers.empty? && @workers.empty?
+        logger.info('launcher') { 'Gracefully shutdown' }
+        return
+      end
 
       logger.info('launcher') { "Killing remaining #{@pollers.size} pollers, #{@workers.size} workers" }
       @pollers.each(&:kill)
@@ -85,8 +88,6 @@ module Eventboss
         sleep shutdown_delay
         logger.info('launcher') { "Waiting for #{@pollers.size} pollers, #{@workers.size} workers" }
       end
-
-      logger.info('launcher') { 'Gracefully shutdown' } if @pollers.empty? && @workers.empty?
     end
 
     def shutdown_attempts
