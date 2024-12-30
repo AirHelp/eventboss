@@ -20,6 +20,7 @@ module Eventboss
       :eventboss_account_id,
       :aws_access_key_id,
       :aws_secret_access_key,
+      :aws_session_token,
       :aws_sns_endpoint,
       :aws_sqs_endpoint,
       :sns_sqs_name_infix,
@@ -63,10 +64,7 @@ module Eventboss
       defined_or_default('sqs_client') do
         options = {
           region: eventboss_region,
-          credentials: Aws::Credentials.new(
-            aws_access_key_id,
-            aws_secret_access_key
-          )
+          credentials: credentials
         }
         if aws_sqs_endpoint
           options[:endpoint] = aws_sqs_endpoint
@@ -74,6 +72,15 @@ module Eventboss
 
         Aws::SQS::Client.new(options)
       end
+    end
+
+    def credentials
+      return Aws::Credentials.new(aws_access_key_id, aws_secret_access_key, aws_session_token) if development_mode?
+        
+      Aws::Credentials.new(
+        aws_access_key_id,
+        aws_secret_access_key
+      )
     end
 
     def eventboss_region
@@ -94,6 +101,10 @@ module Eventboss
 
     def aws_secret_access_key
       defined_or_default('aws_secret_access_key') { ENV['AWS_SECRET_ACCESS_KEY'] }
+    end
+
+    def aws_session_token
+      defined_or_default('aws_session_token') { ENV['AWS_SESSION_TOKEN'] }
     end
 
     def aws_sqs_endpoint
