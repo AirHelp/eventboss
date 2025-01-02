@@ -42,10 +42,7 @@ module Eventboss
       if configured?
         options = {
           region: configuration.eventboss_region,
-          credentials: ::Aws::Credentials.new(
-            configuration.aws_access_key_id,
-            configuration.aws_secret_access_key
-          )
+          credentials: credentials
         }
         if configuration.aws_sns_endpoint
           options[:endpoint] = configuration.aws_sns_endpoint
@@ -57,6 +54,19 @@ module Eventboss
       else
         Mock.new
       end
+    end
+
+    def credentials
+      return ::Aws::Credentials.new(
+        configuration.aws_access_key_id,
+        configuration.aws_secret_access_key,
+        configuration.aws_session_token
+      ) if configuration.development_mode?
+
+      ::Aws::Credentials.new(
+        configuration.aws_access_key_id,
+        configuration.aws_secret_access_key
+      )
     end
 
     def configured?
