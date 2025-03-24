@@ -18,6 +18,7 @@ module Eventboss
       :eventboss_region,
       :eventboss_app_name,
       :eventboss_account_id,
+      :eventboss_use_default_credentials,
       :aws_access_key_id,
       :aws_secret_access_key,
       :aws_session_token,
@@ -64,8 +65,12 @@ module Eventboss
       defined_or_default('sqs_client') do
         options = {
           region: eventboss_region,
-          credentials: credentials
         }
+
+        unless eventboss_use_default_credentials
+          options[:credentials] = credentials
+        end
+
         if aws_sqs_endpoint
           options[:endpoint] = aws_sqs_endpoint
         end
@@ -93,6 +98,10 @@ module Eventboss
 
     def eventboss_account_id
       defined_or_default('eventboss_account_id') { ENV['EVENTBOSS_ACCOUNT_ID'] || ENV['EVENTBUS_ACCOUNT_ID'] }
+    end
+
+    def eventboss_use_default_credentials
+      defined_or_default('eventboss_use_default_credentials') { ENV['EVENTBOSS_USE_DEFAULT_CREDENTIALS'] == 'true' }
     end
 
     def aws_access_key_id

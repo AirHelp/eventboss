@@ -42,8 +42,12 @@ module Eventboss
       if configured?
         options = {
           region: configuration.eventboss_region,
-          credentials: credentials
         }
+
+        unless configuration.eventboss_use_default_credentials
+          options[:credentials] = credentials
+        end
+
         if configuration.aws_sns_endpoint
           options[:endpoint] = configuration.aws_sns_endpoint
         end
