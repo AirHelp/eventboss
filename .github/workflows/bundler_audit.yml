@@ -16,6 +16,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
       - name: Install bundle audit
         run: gem install bundle-audit
       - name: Update Ruby Advisory Database
