@@ -25,6 +25,7 @@ module Eventboss
         Eventboss::DevelopmentMode.setup_infrastructure(queues) if config.development_mode?
 
         begin
+          validate_client!(client, config)
           launcher.start
           handle_signals(self_read, launcher)
         rescue Interrupt
@@ -34,6 +35,18 @@ module Eventboss
       end
 
       private
+
+      def validate_client!(client, config)
+        provider = client.config.credentials.class
+
+        if !config.eventboss_use_default_credentials && provider != Aws::ECSCredentials
+          logger.error('runner') do
+            "AWS client was initiated with wrong credentials provider: #{provider}. " \
+            "Expected: Aws::ECSCredentials. Shutting down."
+          end
+          exit 1
+        end
+      end
 
       def setup_signals(signals)
         self_read, self_write = IO.pipe
