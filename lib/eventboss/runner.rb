@@ -39,7 +39,7 @@ module Eventboss
       def validate_client!(client, config)
         provider = client.config.credentials.class
 
-        if !config.eventboss_use_default_credentials && provider != Aws::ECSCredentials
+        if config.aws_container_authorization_token_file && provider != Aws::ECSCredentials
           logger.error('runner') do
             "AWS client was initiated with wrong credentials provider: #{provider}. " \
             "Expected: Aws::ECSCredentials. Shutting down."

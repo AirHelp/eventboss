@@ -11,8 +11,10 @@ describe Eventboss::Runner do
       Eventboss::Configuration.new.tap do |config|
         config.sqs_client = client_mock
         config.logger = Logger.new(IO::NULL)
+        config.aws_container_authorization_token_file = aws_container_authorization_token_file
       end
     end
+    let(:aws_container_authorization_token_file) { nil }
     let(:queue1) { double(name: 'Q1', arn: 'Q: Q1') }
     let(:queue2) { double(name: 'Q2', arn: 'Q: Q2') }
     let(:listener1) { double(name: 'L1', options: {}) }
@@ -91,6 +93,8 @@ describe Eventboss::Runner do
     end
 
     context 'when validating AWS client' do
+      let(:aws_container_authorization_token_file) { '/var/run/secrets/eks-pod-identity-token' }
+
       it 'exits if AWS credentials are missing or invalid' do
         allow(client_mock).to receive_message_chain(:config, :credentials, :class)
           .and_return(Aws::InstanceProfileCredentials)
