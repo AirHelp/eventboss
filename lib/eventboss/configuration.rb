@@ -105,7 +105,6 @@ module Eventboss
       defined_or_default('eventboss_use_default_credentials') { ENV['EVENTBOSS_USE_DEFAULT_CREDENTIALS'] == 'true' }
     end
 
-    # presents when IAM roles
     def aws_container_authorization_token_file
       defined_or_default('aws_container_authorization_token_file') { ENV['AWS_CONTAINER_AUTHORIZATION_TOKEN_FILE'] }
     end

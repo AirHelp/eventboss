@@ -108,6 +108,12 @@ Use fixed account ID for localstack setup:
 EVENTBUS_ACCOUNT_ID=000000000000
 ```
 
+### AWS Credentials Validation
+
+When running in container environments with IAM roles (indicated by the presence of `AWS_CONTAINER_AUTHORIZATION_TOKEN_FILE`, which is set automatically by AWS when IAM role is used), Eventboss validates that the AWS client is using the correct credentials provider (`Aws::ECSCredentials`). If the wrong credentials provider is detected, Eventboss will log an error and exit with code 1 to prevent running with invalid credentials.
+
+This feature is particularly useful in Kubernetes environments where pods should be using ECS credentials for IAM role authentication.
+
 Be aware that `eventbus:deadletter:reload` rake task won't load your configuration if you are not using ENVs
  in non Rails app, although to make it work you can extend your `Rakefile` with:
 
