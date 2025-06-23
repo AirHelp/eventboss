@@ -36,7 +36,7 @@ describe Eventboss::ErrorHandlers::DbConnectionDropHandler do
     end
 
     it 'calls Base.clear_active_connections!' do
-      expect(ActiveRecord::Base).to receive(:clear_active_connections!)
+      expect(handler).to receive(:clear_active_connections!)
       subject.call(ActiveRecord::StatementInvalid.new)
     end
   end
@@ -47,7 +47,8 @@ describe Eventboss::ErrorHandlers::DbConnectionDropHandler do
     end
 
     it 'calls connection_handler.clear_active_connections!' do
-      expect(handler).to receive(:clear_active_connections!)
+      expect(ActiveRecord::Base).to receive(:clear_active_connections!)
+
       subject.call(ActiveRecord::StatementInvalid.new)
     end
   end
