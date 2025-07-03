@@ -11,8 +11,10 @@ describe Eventboss::Runner do
       Eventboss::Configuration.new.tap do |config|
         config.sqs_client = client_mock
         config.logger = Logger.new(IO::NULL)
+        config.aws_container_authorization_token_file = aws_container_authorization_token_file
       end
     end
+    let(:aws_container_authorization_token_file) { nil }
     let(:queue1) { double(name: 'Q1', arn: 'Q: Q1') }
     let(:queue2) { double(name: 'Q2', arn: 'Q: Q2') }
     let(:listener1) { double(name: 'L1', options: {}) }
@@ -33,11 +35,15 @@ describe Eventboss::Runner do
       allow(Eventboss::Topic).to receive(:build_name).and_return('T')
       allow(sqs_client).to receive(:create_queue).with(queue_name: 'Q1')
       allow(sqs_client).to receive(:create_queue).with(queue_name: 'Q2')
+      allow(sqs_client).to receive_message_chain(:config, :credentials, :class)
+        .and_return(Aws::ECSCredentials)
       allow(sns_client).to receive(:create_topic).with(name: 'T').and_return(topic)
       allow(sns_client).to receive(:create_subscription)
         .with(topic_arn: 'T1', queue_arn: 'Q: Q1').and_return(topic)
       allow(sns_client).to receive(:create_subscription)
         .with(topic_arn: 'T1', queue_arn: 'Q: Q2').and_return(topic)
+      allow(client_mock).to receive_message_chain(:config, :credentials, :class)
+        .and_return(Aws::ECSCredentials)
       allow(launcher).to receive(:start).and_raise(Interrupt)
       allow(launcher).to receive(:stop)
       allow(Eventboss::DevelopmentMode).to receive(:setup_infrastructure).with(queues)
@@ -83,6 +89,37 @@ describe Eventboss::Runner do
           described_class.launch
           expect(Eventboss::DevelopmentMode).to have_received(:setup_infrastructure).with(queues)
         end
+      end
+    end
+
+    context 'when validating AWS client' do
+      let(:aws_container_authorization_token_file) { '/var/run/secrets/eks-pod-identity-token' }
+
+      it 'exits if AWS credentials are missing or invalid' do
+        allow(client_mock).to receive_message_chain(:config, :credentials, :class)
+          .and_return(Aws::InstanceProfileCredentials)
+        allow(Eventboss).to receive(:configuration).and_return(configuration)
+        allow(Eventboss::QueueListener).to receive(:select).and_return(queues)
+
+        pid = fork do
+          Eventboss::Runner.launch
+        end
+
+        _, status = Process.wait2(pid)
+        expect(status.exitstatus).to eq(1)
+      end
+
+      it 'continues if AWS credentials are valid' do
+        allow(Eventboss).to receive(:configuration).and_return(configuration)
+        allow(Eventboss::QueueListener).to receive(:select).and_return(queues)
+        allow(launcher).to receive(:start).and_raise(Interrupt)
+
+        pid = fork do
+          Eventboss::Runner.launch
+        end
+
+        _, status = Process.wait2(pid)
+        expect(status.exitstatus).to eq(0)
       end
     end
   end
