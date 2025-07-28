@@ -13,53 +13,39 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          registries: 158094083467
+          ruby-version: ruby
+          # runs 'bundle install' and caches installed gems automatically
+          bundler-cache: true
 
       - name: "Publish gem eventboss"
         shell: bash
         env:
-          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_TOKEN }}
+          GEM_HOST_API_KEY: ${{ secrets.EVENTBOSS_RUBYGEMS_TOKEN }}
+
         run: |
           set -euo pipefail
-          RUBY_VERSION=$(cat .ruby-version)
+          # make this path safe so git commands work on a root-owned mount
+          git config --global --add safe.directory /usr/src/app
 
-          docker run --rm \
-            -v "${GITHUB_WORKSPACE}:/usr/src/app" \
-            -w /usr/src/app \
-            -e GEM_HOST_API_KEY \
-            158094083467.dkr.ecr.eu-west-1.amazonaws.com/ruby:"$RUBY_VERSION" \
-            bash -lc '
-              set -euo pipefail
-              
-              echo "🔧 Installing dependencies…"
-              gem install bundler
-              bundle install --jobs=4 --retry=3
-              
-              # make this path safe so git commands work on a root-owned mount
-              git config --global --add safe.directory /usr/src/app
-          
-              echo "📦 Building & publishing eventboss"
-              # Build the gem
-              gemspec=$(basename *.gemspec)
-              gem build "$gemspec"
-             
-              set +e
-              push_output=$(gem push *.gem 2>&1)
-              push_exit_code=$?
-              set -e
-      
-              if [[ $push_exit_code -eq 0 ]]; then
-                echo "✅ Successfully published eventboss!"
-              elif grep -q "already been pushed" <<< "$push_output"; then
-                echo "::warning title=Gem already pushed::Gem eventboss version already published. Skipping this step."
-                echo "::notice title=Skipped publishing::Gem eventboss version already exists."
-                exit 0
-              else
-                echo "::error title=Gem Push Failed::$push_output"
-                exit 1
-              fi
-              '
+          echo "📦 Building & publishing eventboss"
+          # Build the gem
+          gem build eventboss.gemspec
+
+          set +e
+          push_output=$(gem push *.gem 2>&1)
+          push_exit_code=$?
+          set -e
+
+          if [[ $push_exit_code -eq 0 ]]; then
+            echo "✅ Successfully published eventboss!"
+          elif grep -q "already been pushed" <<< "$push_output"; then
+            echo "::warning title=Gem already pushed::Gem eventboss version already published. Skipping this step."
+            echo "::notice title=Skipped publishing::Gem eventboss version already exists."
+            exit 0
+          else
+            echo "::error title=Gem Push Failed::$push_output"
+            exit 1
+          fi
