@@ -5,7 +5,7 @@ on:
 
 jobs:
   publish:
-    runs-on: [self-hosted-utils-small-arm64]
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
