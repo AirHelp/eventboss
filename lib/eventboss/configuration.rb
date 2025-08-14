@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'ostruct'
+
 module Eventboss
   class Configuration
     OPTS_ALLOWED_IN_CONFIG_FILE = %i[
@@ -145,6 +147,71 @@ module Eventboss
 
     def server_middleware
       @server_middleware ||= Middleware::Chain.new
+    end
+
+    def sentry_configuration
+      @sentry_configuration ||= begin
+        # Try to use the new Sentry integration configuration if available
+        if defined?(::Sentry) && ::Sentry.initialized? && defined?(::Sentry.configuration.eventboss)
+          # Create a bridge to the new configuration structure
+          SentryConfigurationBridge.new(::Sentry.configuration.eventboss)
+        else
+          # Fallback to the old configuration
+          require 'eventboss/error_handlers/sentry/configuration'
+          Eventboss::ErrorHandlers::Sentry::Configuration.new
+        end
+      rescue LoadError
+        # Sentry not available, return a mock configuration
+        OpenStruct.new(
+          report_after_retries: false,
+          capture_message_body: false,
+          capture_message_headers: true,
+          propagate_traces: true,
+          performance_monitoring: true,
+          excluded_listeners: [],
+          max_message_body_size: 4096,
+          excluded_listener?: proc { false }
+        )
+      end
+    end
+    
+    # Bridge class to provide backward compatibility with old configuration interface
+    class SentryConfigurationBridge
+      def initialize(new_config)
+        @new_config = new_config
+      end
+      
+      def report_after_retries
+        @new_config.report_after_job_retries
+      end
+      
+      def capture_message_body
+        @new_config.capture_job_body
+      end
+      
+      def capture_message_headers
+        @new_config.capture_headers
+      end
+      
+      def propagate_traces
+        @new_config.propagate_traces
+      end
+      
+      def performance_monitoring
+        @new_config.performance_monitoring
+      end
+      
+      def excluded_listeners
+        @new_config.excluded_listeners
+      end
+      
+      def max_message_body_size
+        @new_config.max_message_body_size
+      end
+      
+      def excluded_listener?(listener_class)
+        @new_config.excluded_listener?(listener_class)
+      end
     end
 
     private

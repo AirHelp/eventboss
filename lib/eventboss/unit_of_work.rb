@@ -15,12 +15,14 @@ module Eventboss
     end
 
     def run
+      started_at = Time.current
       logger.debug(@message.message_id) { 'Started' }
       processor = @listener.new
       processor.receive(JSON.parse(@message.body))
       logger.debug(@message.message_id) { 'Finished' }
     rescue StandardError => exception
-      handle_exception(exception, processor: processor, message_id: @message.message_id)
+      context = build_error_context(processor, started_at)
+      handle_exception(exception, context)
     else
       cleanup unless processor.postponed_by
     ensure
@@ -40,6 +42,27 @@ module Eventboss
         queue_url: @queue.url, receipt_handle: @message.receipt_handle
       )
       logger.debug(@message.message_id) { 'Deleting' }
+    end
+
+    private
+
+    def build_error_context(processor, started_at)
+      {
+        processor: processor,
+        message_id: @message.message_id,
+        queue_name: @queue.name,
+        listener_class: @listener.to_s,
+        processing_started_at: started_at,
+        processing_duration: Time.current.to_f - started_at.to_f
+      }
+    end
+
+    def extract_message_attributes
+      return {} unless @message.respond_to?(:attributes) && @message.attributes
+
+      @message.attributes
+    rescue => e
+      { extraction_error: e.message }
     end
   end
 end

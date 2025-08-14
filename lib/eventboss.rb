@@ -88,3 +88,11 @@ module Eventboss
     end
   end
 end
+
+# Auto-load Sentry integration if Sentry is available
+begin
+  require 'sentry-ruby'
+  require 'sentry-eventboss'
+rescue LoadError
+  # Sentry not available, skip integration
+end
