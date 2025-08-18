@@ -73,7 +73,8 @@ module Eventboss
       @client.receive_message(
         queue_url: queue.url,
         max_number_of_messages: 10,
-        wait_time_seconds: TIME_WAIT
+        wait_time_seconds: TIME_WAIT,
+        attribute_names: ['SentTimestamp', 'ApproximateReceiveCount']
       ).messages
     end
   end
