@@ -11,7 +11,7 @@ module Eventboss
         scope = ::Sentry.get_current_scope
         scope.clear
         scope.set_tags(queue: work.queue.name, message_id: work.message.message_id)
-        scope.set_transaction_name(work.listener.to_s, source: :task)
+        scope.set_transaction_name(extract_transaction_name(work), source: :task)
         transaction = start_transaction(scope)
 
         if transaction
@@ -56,6 +56,9 @@ module Eventboss
         transaction.finish
       end
 
+      def extract_transaction_name(work)
+        "Eventboss/#{work.listener.to_s}"
+      end
       def extract_latency(message)
         if sent_timestamp = message.attributes.fetch('SentTimestamp', nil)
           Time.now - Time.at(sent_timestamp.to_i / 1000.0)
