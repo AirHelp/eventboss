@@ -54,7 +54,12 @@ module Eventboss
         { string_value: header_value, data_type: 'String' }
       end
       user = ::Sentry.get_current_scope.user
-      attributes['sentry_user'] = user unless user.empty?
+      if user && !user.empty?
+        attributes['sentry_user'] = {
+          string_value: user.to_json,
+          data_type: 'String'
+        }
+      end
       attributes
     end
   end
