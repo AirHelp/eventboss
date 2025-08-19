@@ -4,20 +4,27 @@ module Eventboss
       OP_NAME = 'queue.process'
       SPAN_ORIGIN = 'auto.queue.eventboss'
 
+      # since sentry has env selector, we can remove it from queue names
+      QUEUES_WITHOUT_ENV = Hash.new do |hash, key|
+        hash[key] = key
+                      .gsub("-#{Eventboss.env}-", '')
+                      .gsub("-#{Eventboss.env}", '')
+      end
+
       def call(work)
         return yield unless ::Sentry.initialized?
 
         ::Sentry.clone_hub_to_current_thread
         scope = ::Sentry.get_current_scope
         scope.clear
-        scope.set_tags(queue: work.queue.name, message_id: work.message.message_id)
+        scope.set_tags(queue: extract_queue_name(work), message_id: work.message.message_id)
         scope.set_transaction_name(extract_transaction_name(work), source: :task)
         transaction = start_transaction(scope)
 
         if transaction
           scope.set_span(transaction)
           transaction.set_data(::Sentry::Span::DataConventions::MESSAGING_MESSAGE_ID, work.message.message_id)
-          transaction.set_data(::Sentry::Span::DataConventions::MESSAGING_DESTINATION_NAME, work.queue.name)
+          transaction.set_data(::Sentry::Span::DataConventions::MESSAGING_DESTINATION_NAME, extract_queue_name(work))
 
           if (latency = extract_latency(work.message))
             transaction.set_data(::Sentry::Span::DataConventions::MESSAGING_MESSAGE_RECEIVE_LATENCY, latency)
@@ -59,6 +66,11 @@ module Eventboss
       def extract_transaction_name(work)
         "Eventboss/#{work.listener.to_s}"
       end
+
+      def extract_queue_name(work)
+        QUEUES_WITHOUT_ENV[work.queue.name]
+      end
+
       def extract_latency(message)
         if sent_timestamp = message.attributes.fetch('SentTimestamp', nil)
           Time.now - Time.at(sent_timestamp.to_i / 1000.0)
