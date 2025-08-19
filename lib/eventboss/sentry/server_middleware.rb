@@ -73,7 +73,9 @@ module Eventboss
       end
 
       def extract_sentry_user(work)
-        work.message.message_attributes["sentry_user"]&.string_value
+        if (value = work.message.message_attributes["sentry_user"]&.string_value)
+          JSON.parse(value)
+        end
       end
 
       def extract_transaction_name(work)
