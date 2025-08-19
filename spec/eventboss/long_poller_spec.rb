@@ -32,7 +32,8 @@ describe Eventboss::LongPoller do
     it 'calls client with proper attributes' do
       expect(client).to receive(:receive_message)
         .with(queue_url: 'url', max_number_of_messages: 10, wait_time_seconds: 10,
-              attribute_names: ["SentTimestamp", "ApproximateReceiveCount"])
+              attribute_names: ["SentTimestamp", "ApproximateReceiveCount"],
+              message_attribute_names: ["sentry-trace", "baggage", "sentry_user"])
 
       subject.fetch_and_dispatch
     end
