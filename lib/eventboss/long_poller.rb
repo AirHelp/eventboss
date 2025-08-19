@@ -74,7 +74,8 @@ module Eventboss
         queue_url: queue.url,
         max_number_of_messages: 10,
         wait_time_seconds: TIME_WAIT,
-        attribute_names: ['SentTimestamp', 'ApproximateReceiveCount']
+        attribute_names: ['SentTimestamp', 'ApproximateReceiveCount'],
+        message_attribute_names: ['sentry-trace', 'baggage', 'sentry_user']
       ).messages
     end
   end
