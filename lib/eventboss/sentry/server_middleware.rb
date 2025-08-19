@@ -17,9 +17,12 @@ module Eventboss
         ::Sentry.clone_hub_to_current_thread
         scope = ::Sentry.get_current_scope
         scope.clear
+        if (user = extract_sentry_user(work))
+          scope.set_user(user)
+        end
         scope.set_tags(queue: extract_queue_name(work), message_id: work.message.message_id)
         scope.set_transaction_name(extract_transaction_name(work), source: :task)
-        transaction = start_transaction(scope)
+        transaction = start_transaction(scope, work)
 
         if transaction
           scope.set_span(transaction)
@@ -45,7 +48,7 @@ module Eventboss
         finish_transaction(transaction, 200)
       end
 
-      def start_transaction(scope)
+      def start_transaction(scope, work)
         options = {
           name: scope.transaction_name,
           source: scope.transaction_source,
@@ -53,7 +56,13 @@ module Eventboss
           origin: SPAN_ORIGIN
         }
 
-        ::Sentry.start_transaction(**options)
+        env = {
+          'sentry-trace' => work.message.message_attributes['sentry-trace']&.string_value,
+          'baggage' => work.message.message_attributes['baggage']&.string_value
+        }
+
+        transaction = ::Sentry.continue_trace(env, **options)
+        ::Sentry.start_transaction(transaction: transaction, **options)
       end
 
       def finish_transaction(transaction, status)
@@ -61,6 +70,10 @@ module Eventboss
 
         transaction.set_http_status(status)
         transaction.finish
+      end
+
+      def extract_sentry_user(work)
+        work.message.message_attributes["sentry_user"]&.string_value
       end
 
       def extract_transaction_name(work)
