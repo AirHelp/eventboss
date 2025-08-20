@@ -37,11 +37,11 @@ module Eventboss
       queue_name = Queue.build_name(destination: source, event_name: event_name, env: Eventboss.env, source_app: source)
 
       ::Sentry.with_child_span(op: 'queue.publish', description: "Eventboss push #{source}/#{event_name}") do |span|
-        span.set_data(::Sentry::Span::DataConventions::MESSAGING_DESTINATION_NAME, ::Eventboss::Sentry::Context.queue_name_for_sentry(queue_name))
+        span.set_data(::Sentry::Span::DataConventions::MESSAGING_DESTINATION_NAME, ::Eventboss::Sentry::Context.queue_name_for_sentry(queue_name)) if span
 
         message = yield
 
-        span.set_data(::Sentry::Span::DataConventions::MESSAGING_MESSAGE_ID, message.message_id)
+        span.set_data(::Sentry::Span::DataConventions::MESSAGING_MESSAGE_ID, message.message_id) if span
         message
       end
     end
