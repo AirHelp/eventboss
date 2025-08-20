@@ -7,6 +7,8 @@ module Eventboss
              "For automatic configuration, require 'eventboss/sentry/configure'. " \
              "This class will be removed in a future version."
         super
+      end
+
       def call(exception, context = {})
         eventboss_context = { component: 'eventboss' }
         eventboss_context[:action] = context[:processor].class.to_s if context[:processor]
