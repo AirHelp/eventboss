@@ -165,13 +165,7 @@ Eventboss provides built-in integration with [Sentry](https://sentry.io/) for er
 require 'eventboss/sentry/configure'
 ```
 
-For more advanced configuration options, you can manually configure the integration:
-
-```ruby
-Eventboss.configure do |config|
-  config.server_middleware.add Eventboss::Sentry::ServerMiddleware
-  config.error_handlers << Eventboss::Sentry::ErrorHandler.new
-end
+For more advanced configuration options, you can manually configure the integration. Please inspect [lib/eventboss/sentry/configure.rb](lib/eventboss/sentry/configure.rb) to see options.
 ```
 
 ### Middlewares
