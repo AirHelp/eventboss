@@ -26,7 +26,8 @@ RSpec.describe Eventboss::Publisher do
     it 'publishes to sns with source app name by default' do
       expect(sns_client).to receive(:publish).with(
         topic_arn: "arn:aws:sns:::eventboss-app_name1-event_name-ping",
-        message: "{}"
+        message: "{}",
+        message_attributes: {}
       )
       expect(subject).to eq(sns_response)
     end
@@ -53,7 +54,8 @@ RSpec.describe Eventboss::Publisher do
       it 'publishes to sns without app name' do
         expect(sns_client).to receive(:publish).with(
           topic_arn: "arn:aws:sns:::eventboss-event_name-ping",
-          message: "{}"
+          message: "{}",
+          message_attributes: {}
         )
         subject
       end
