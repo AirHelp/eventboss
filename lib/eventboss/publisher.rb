@@ -13,7 +13,7 @@ module Eventboss
     # If Sentry is enabled, it wraps the publish action in a Sentry span for tracing.
     def publish(payload)
       sns_params = build_sns_params(payload)
-      publisher_action = -> { sns_client.publish(sns_params) }
+      publisher_action = -> { sns_client.publish(**sns_params) }
 
       if sentry_enabled?
         with_sentry_span(&publisher_action)
