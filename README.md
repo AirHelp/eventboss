@@ -157,6 +157,23 @@ Eventboss.configure do |config|
 end
 ```
 
+### Sentry Integration
+
+Eventboss provides built-in integration with [Sentry](https://sentry.io/) for error monitoring and performance tracking. The simplest way to enable Sentry integration is to require the configuration module:
+
+```ruby
+require 'eventboss/sentry/configure'
+```
+
+For more advanced configuration options, you can manually configure the integration:
+
+```ruby
+Eventboss.configure do |config|
+  config.server_middleware.add Eventboss::Sentry::ServerMiddleware
+  config.error_handlers << Eventboss::Sentry::ErrorHandler.new
+end
+```
+
 ### Middlewares
 
 Server middlewares intercept the execution of your `Listeners`. You can use to extract and run common functions on every message received.
