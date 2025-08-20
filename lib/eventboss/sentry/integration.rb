@@ -1,6 +1,7 @@
 require 'sentry-ruby'
 require 'sentry/integrable'
 require_relative 'error_handler'
+require_relative 'context'
 require_relative 'server_middleware'
 
 module Eventboss

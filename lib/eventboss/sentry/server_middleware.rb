@@ -4,13 +4,6 @@ module Eventboss
       OP_NAME = 'queue.process'
       SPAN_ORIGIN = 'auto.queue.eventboss'
 
-      # since sentry has env selector, we can remove it from queue names
-      QUEUES_WITHOUT_ENV = Hash.new do |hash, key|
-        hash[key] = key
-                      .gsub(/-#{Eventboss.env}-deadletter$/, '-ENV-deadletter')
-                      .gsub(/-#{Eventboss.env}$/, '-ENV')
-      end
-
       def call(work)
         return yield unless ::Sentry.initialized?
 
@@ -83,7 +76,7 @@ module Eventboss
       end
 
       def extract_queue_name(work)
-        QUEUES_WITHOUT_ENV[work.queue.name]
+        ::Eventboss::Sentry::Context.queue_name_for_sentry(work.queue.name)
       end
 
       def extract_latency(message)
