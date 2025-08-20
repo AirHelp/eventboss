@@ -7,8 +7,8 @@ module Eventboss
       # since sentry has env selector, we can remove it from queue names
       QUEUES_WITHOUT_ENV = Hash.new do |hash, key|
         hash[key] = key
-                      .gsub("-#{Eventboss.env}-", '-ENV-')
-                      .gsub("-#{Eventboss.env}", '-ENV')
+                      .gsub(/-#{Eventboss.env}-deadletter$/, '-ENV-deadletter')
+                      .gsub(/-#{Eventboss.env}$/, '-ENV')
       end
 
       def call(work)

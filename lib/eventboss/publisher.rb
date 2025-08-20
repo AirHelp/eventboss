@@ -22,7 +22,7 @@ module Eventboss
     def publish_with_sentry(payload)
       topic_arn = Topic.build_arn(event_name: event_name, source_app: source)
 
-      ::Sentry.with_child_span(op: "queue.publish", description: "#{source}##{event_name}") do
+      ::Sentry.with_child_span(op: "queue.publish", description: "Eventboss push #{source}/#{event_name}") do
         sns_client.publish(
           topic_arn: topic_arn,
           message: json_payload(payload),
