@@ -39,25 +39,22 @@ module Eventboss
     end
 
     def backend
-      if configured?
-        options = {
-          region: configuration.eventboss_region,
-        }
+      @backend ||=
+        if configured?
+          options = {
+            region: configuration.eventboss_region
+          }
 
-        unless configuration.eventboss_use_default_credentials
-          options[:credentials] = credentials
+          options[:credentials] = credentials unless configuration.eventboss_use_default_credentials
+
+          options[:endpoint] = configuration.aws_sns_endpoint if configuration.aws_sns_endpoint
+
+          Aws::SNS::Client.new(options)
+        elsif configuration.raise_on_missing_configuration
+          raise NotConfigured, 'Eventboss is not configured.'
+        else
+          Mock.new
         end
-
-        if configuration.aws_sns_endpoint
-          options[:endpoint] = configuration.aws_sns_endpoint
-        end
-
-        Aws::SNS::Client.new(options)
-      elsif configuration.raise_on_missing_configuration
-        raise NotConfigured, 'Eventboss is not configured.'
-      else
-        Mock.new
-      end
     end
 
     def credentials
