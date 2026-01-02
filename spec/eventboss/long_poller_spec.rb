@@ -14,7 +14,7 @@ describe Eventboss::LongPoller do
 
   before do
     allow(client).to receive(:receive_message) do
-      OpenStruct.new(messages: [message])
+      double(messages: [message])
     end
   end
 
