@@ -102,5 +102,34 @@ RSpec.describe Eventboss::CLI do
         expect { subject.run }.to raise_error LoadError
       end
     end
+
+    describe 'when SIGTERM is received during boot' do
+      let(:default_sigterm_signal) { Signal.trap 'SIGTERM', 'SYSTEM_DEFAULT' }
+
+      after { Signal.trap 'SIGTERM', default_sigterm_signal }
+
+      it 'exits with status 0 instead of crashing' do
+        reader, writer = IO.pipe
+
+        pid = fork do
+          reader.close
+          allow(subject).to receive(:boot_system) do
+            writer.puts 'booting'
+            sleep 5
+          end
+          allow(Eventboss).to receive(:launch)
+
+          subject.run
+        end
+
+        writer.close
+        reader.gets
+
+        Process.kill 'SIGTERM', pid
+        _, status = Process.wait2(pid)
+
+        expect(status.exitstatus).to eq 0
+      end
+    end
   end
 end
