@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.9.9]
+
+### Fixed
+- Exit cleanly on SIGTERM received during application boot, before the runner installs its graceful signal handling, so a shutdown mid-boot is no longer reported as a crash
+
 ## [1.9.8]
 
 - Improve performance by reusing SNS client

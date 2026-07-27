@@ -30,6 +30,8 @@ module Eventboss
     end
 
     def run
+      setup_boot_signal_traps
+
       boot_system
 
       Eventboss.logger.info('Starting eventboss...')
@@ -38,6 +40,15 @@ module Eventboss
     end
 
     private
+
+    # Booting the application (e.g. loading Rails) can take long enough that a
+    # termination signal arrives before Runner installs its graceful signal
+    # handling. Without a handler the process dies non-gracefully and is
+    # reported as a crash. Until Runner takes over, exit cleanly on SIGTERM so
+    # a shutdown mid-boot is not treated as a failure.
+    def setup_boot_signal_traps
+      Signal.trap('SIGTERM') { exit 0 }
+    end
 
     def boot_system
       require 'rails'
