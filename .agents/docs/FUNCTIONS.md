@@ -1,0 +1,18 @@
+- **Event publishing** — lets an AirHelp service announce business facts to all interested services.
+  - **Broadcasting** — publishes a named event so any subscribed service receives it.
+  - **Direct sending** — delivers events to one named destination service, including in batches.
+  - **Automatic serialization** — converts event payloads to and from the wire format transparently.
+- **Event listening** — lets an AirHelp service react to business facts announced by others.
+  - **Listener declaration** — a service declares which source app and event it reacts to, and Eventboss routes matching messages to it.
+  - **Concurrent processing** — polls multiple queues in parallel with configurable worker concurrency.
+  - **Selective activation** — includes or excludes specific listeners per deployment via configuration.
+  - **Middleware hooks** — runs shared logic (logging, monitoring) around every received message.
+  - **Postponing** — lets a listener defer a message for later reprocessing after a chosen delay.
+- **Reliability and operations** — keeps event delivery dependable in production.
+  - **Dead-letter recovery** — reloads failed messages from dead-letter queues back for reprocessing.
+  - **Error handling** — routes processing failures to pluggable handlers (logging, Sentry, Airbrake, Rollbar) with dedicated recovery for lost database connections and missing queues.
+  - **Credential validation** — refuses to start with wrong cloud credentials in container deployments.
+- **Developer conveniences** — smooths local and team usage.
+  - **Development mode** — creates missing topics, queues and subscriptions on the fly, locally or against a local cloud emulator.
+  - **Naming convention** — enforces a shared topic/queue naming scheme so services across environments interoperate.
+  - **Code generation** — scaffolds new listener classes.

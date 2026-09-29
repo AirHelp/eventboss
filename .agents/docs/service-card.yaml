@@ -1,0 +1,6 @@
+---
+name: eventboss
+kind: libraries
+domain: platform
+description: |
+  Eventboss is AirHelp's shared **event bus client library** (Ruby gem). Services depend on it to **publish business events** and **listen** for events from other services, giving the whole platform one consistent way to exchange **asynchronous business facts** with built-in **dead-letter recovery** and error handling.
